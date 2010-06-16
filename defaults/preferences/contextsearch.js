@@ -1,0 +1,1 @@
+pref("extensions.contextsearch.hideStandardContextItem",true);
