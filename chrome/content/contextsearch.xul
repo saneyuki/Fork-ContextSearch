@@ -22,6 +22,7 @@
   
   Contributor(s):
     Ben Basson <ben@basson.at>
+    saneyuki <saneyuki.str@gmail.com>
   
   Alternatively, the contents of this file may be used under the terms of
   either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -35,27 +36,28 @@
   the provisions above, a recipient may use your version of this file under
   the terms of any one of the MPL, the GPL or the LGPL.
 
- ***** END LICENSE BLOCK ***** -->
+ ***** END LICENSE BLOCK *****
+-->
 
 <!DOCTYPE window SYSTEM "chrome://browser/locale/browser.dtd">
 
 <overlay id="contextsearch"
-  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-  
-  <script type="application/x-javascript"
-    src="chrome://contextsearch/content/contextsearch.js"/>
-    
-  <popup id="contentAreaContextMenu">
-  
-    <menu id="context-searchmenu"
-      insertafter="context-searchselect"
-      accesskey="&search.accesskey;">
-      
-      <menupopup id="context-searchpopup"
-        oncommand="return contextsearch.search(event);"/>
-        
-    </menu>
-    
-  </popup>
-    
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+	<script type="application/x-javascript"
+	        src="chrome://contextsearch/content/contextsearch.js"/>
+
+	<popup id="contentAreaContextMenu">
+
+		<menu id="context-searchmenu"
+		      insertafter="context-searchselect"
+		      accesskey="&search.accesskey;">
+
+		<menupopup id="context-searchpopup"
+		           oncommand="return contextsearch.search(event);"/>
+
+		</menu>
+
+	</popup>
+
 </overlay>
