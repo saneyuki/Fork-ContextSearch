@@ -248,12 +248,18 @@ var contextsearch =
     if (aEvent.shiftKey) {
       openNewWindowWith(params.searchUrl, null, params.postData, false);
     }
-        
     else 
     {
-      var browser = window.getBrowser();
+      var browser = window.gBrowser;
       var currentTab = browser.selectedTab;
-      var newTab = browser.addTab(params.searchUrl, null, null, params.postData, currentTab, false);
+      var newTab = browser.addTab(params.searchUrl, {
+                        referrerURI          : null,
+                        charset              : null,
+                        postData             : params.postData,
+                        inBackground         : currentTab,
+                        allowThirdPartyFixup : false,
+                        relatedToCurrent     : false
+                   });
 
       if (loadInForeground && newTab != null) {
         browser.selectedTab = newTab;
@@ -263,17 +269,17 @@ var contextsearch =
   
   getSearchParams: function (searchEngine, searchValue)
   {
-  	var searchSubmission = searchEngine.getSubmission(searchValue, null);
-	  var postData = searchSubmission.postData ? searchSubmission.postData : null;
-  	var searchUrl = searchSubmission.uri.spec;
-  	var finalUrl = new String();
+    var searchSubmission = searchEngine.getSubmission(searchValue, null);
+    var postData = searchSubmission.postData ? searchSubmission.postData : null;
+    var searchUrl = searchSubmission.uri.spec;
+    var finalUrl = new String();
 
-  	if (!searchValue) 
+    if (!searchValue) 
     {
-  		var uri = Components.classes['@mozilla.org/network/standard-url;1']
-  		            .createInstance(Components.interfaces.nsIURI);
-  		uri.spec = searchUrl;
-  		searchUrl = uri.host;
+      var uri = Components.classes['@mozilla.org/network/standard-url;1']
+                .createInstance(Components.interfaces.nsIURI);
+      uri.spec = searchUrl;
+      searchUrl = uri.host;
     }
     
     // recommendation by Mat on AMO
