@@ -53,8 +53,8 @@
 		      insertafter="context-searchselect"
 		      accesskey="&search.accesskey;">
 
-		<menupopup id="context-searchpopup"
-		           oncommand="return contextsearch.search(event);"/>
+			<menupopup id="context-searchpopup"
+			           oncommand="return Contextsearch.search(event);"/>
 
 		</menu>
 

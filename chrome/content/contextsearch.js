@@ -35,22 +35,62 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var contextsearch = {
+var Contextsearch = {
 
-	load: function () {
-		var prefs = Components.classes["@mozilla.org/preferences-service;1"]
-		            .getService(Components.interfaces.nsIPrefService);
+	handleEvent: function (aEvent) {
+		switch (aEvent.type) {
+			case "load":
+				this.onLoad();
+				break;
+			case "popupshowing":
+				this.popuphandler();
+				break;
+			case "unload":
+				this.onUnLoad();
+				break;
+		}
+	},
 
-		contextsearch.contextitem = document.getElementById("context-searchmenu");
-		contextsearch.popup = document.getElementById("context-searchpopup");
-		contextsearch.hideMenuItem = prefs.getBoolPref("extensions.contextsearch.hideStandardContextItem");
+	get searchService () {
+		delete this.searchService;
+		return this.searchService = Components.classes["@mozilla.org/browser/search-service;1"]
+		                            .getService(Components.interfaces.nsIBrowserSearchService);
+	},
 
-		document.getElementById("contentAreaContextMenu").addEventListener("popupshowing",contextsearch.popuphandler,false);
-		window.removeEventListener("load", contextsearch.load, false);
+	get prefService () {
+		delete this.prefService;
+		return this.prefService = Components.classes["@mozilla.org/preferences-service;1"]
+		                          .getService(Components.interfaces.nsIPrefService);
+	},
+
+	get contextitem () {
+		delete this.contextitem;
+		return this.contextitem = document.getElementById("context-searchmenu");
+	},
+
+	get popup () {
+		delete this.popup;
+		return this.popup = document.getElementById("context-searchpopup");
+	},
+
+	get hideMenuItem () {
+		delete this.hideMenuItem;
+		return this.hideMenuItem = this.prefService.getBoolPref("extensions.contextsearch.hideStandardContextItem");
+	},
+
+	onLoad: function () {
+		window.removeEventListener("load", this, false);
+		document.getElementById("contentAreaContextMenu").addEventListener("popupshowing", this, false);
+		window.addEventListener("unload", this, false);
+	},
+
+	onUnLoad: function () {
+		window.removeEventListener("unload", this, false);
+		document.getElementById("contentAreaContextMenu").removeEventListener("popupshowing", this, false);
 	},
 
 	popuphandler: function() {
-		var selectedText = contextsearch.getBrowserSelection(16);
+		var selectedText = this.getBrowserSelection(16);
 
 		// truncate text for label and set up menu items as appropriate
 		if (selectedText != null && selectedText.length > 0) {
@@ -58,16 +98,16 @@ var contextsearch = {
 				selectedText = selectedText.substr(0,15) + "...";
 			}
 
-			var menuLabel = contextsearch.getMenuItemLabel(selectedText, false);
+			var menuLabel = this.getMenuItemLabel(selectedText, false);
 
-			contextsearch.rebuildmenu();
-			contextsearch.setupDefaultMenuItem(selectedText);
-			contextsearch.contextitem.setAttribute("label", menuLabel);
-			contextsearch.contextitem.setAttribute("hidden","false");
+			this.rebuildmenu();
+			this.setupDefaultMenuItem(selectedText);
+			this.contextitem.setAttribute("label", menuLabel);
+			this.contextitem.setAttribute("hidden","false");
 		}
 
 		else {
-			contextsearch.contextitem.setAttribute("hidden","true");
+			this.contextitem.setAttribute("hidden","true");
 		}
 	},
 
@@ -76,8 +116,8 @@ var contextsearch = {
 		var selectedText = null;
 
 		// get text selection from input node
-		if (contextsearch.isTextInputNode(focusedElement) 
-		    && contextsearch.textSelectedInNode(focusedElement)) {
+		if (this.isTextInputNode(focusedElement) 
+		    && this.textSelectedInNode(focusedElement)) {
 			var startPos = focusedElement.selectionStart;
 			var endPos = focusedElement.selectionEnd;
 
@@ -119,8 +159,7 @@ var contextsearch = {
 		var engineName = "";
 
 		if (aUseEngineName) {
-			var ss = Components.classes["@mozilla.org/browser/search-service;1"]
-			         .getService(Components.interfaces.nsIBrowserSearchService)
+			var ss = this.searchService;
 
 			// Firefox 3.0
 			if (window.isElementVisible && isElementVisible(BrowserSearch.searchBar)) {
@@ -142,8 +181,8 @@ var contextsearch = {
 		var menuItem = document.getElementById("context-searchselect");
 
 		// only go to this effort if pref is flipped
-		if (contextsearch.hideMenuItem == false) {
-			var menuLabel = contextsearch.getMenuItemLabel(selectedText, true);
+		if (this.hideMenuItem == false) {
+			var menuLabel = this.getMenuItemLabel(selectedText, true);
 
 			// set label, show item and return
 			menuItem.setAttribute("label", menuLabel);
@@ -160,11 +199,8 @@ var contextsearch = {
 	rebuildmenu: function () {
 		const kXULNS = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
 
-		var searchService = Components.classes["@mozilla.org/browser/search-service;1"]
-		                    .getService(Components.interfaces.nsIBrowserSearchService);
-
-		var popup = contextsearch.popup;
-		var engines = searchService.getVisibleEngines({ });
+		var popup = this.popup;
+		var engines = this.searchService.getVisibleEngines({ });
 
 		// clear menu
 		while (popup.firstChild) {
@@ -183,7 +219,7 @@ var contextsearch = {
 
 			popup.insertBefore(menuitem, popup.firstChild);
 			menuitem.engine = engines[i];
-			menuitem.setAttribute("onclick", "return contextsearch.menuitemclick(event);");
+			menuitem.setAttribute("onclick", "return Contextsearch.menuitemclick(event);");
 		}
 	},
 
@@ -203,7 +239,7 @@ var contextsearch = {
 		}
 
 		// continue with search
-		contextsearch.search(aEvent);
+		this.search(aEvent);
 		return true;
 	},
 
@@ -212,11 +248,8 @@ var contextsearch = {
 			return;
 		}
 
-		var prefs = Components.classes["@mozilla.org/preferences-service;1"]
-		　　　　　　　　　　.getService(Components.interfaces.nsIPrefService);
-
-		var params = contextsearch.getSearchParams(aEvent.target.engine, contextsearch.getBrowserSelection(null, aEvent));
-		var loadInBackgroundPref = prefs.getBoolPref("browser.tabs.loadInBackground");
+		var params = this.getSearchParams(aEvent.target.engine, this.getBrowserSelection(null, aEvent));
+		var loadInBackgroundPref = this.prefService.getBoolPref("browser.tabs.loadInBackground");
 		var loadInForeground = false;
 
 		if (aEvent.button == undefined) {
@@ -229,7 +262,7 @@ var contextsearch = {
 		if (aEvent.shiftKey) {
 			openNewWindowWith(params.searchUrl, null, params.postData, false);
 		}
-	    else　{
+	    else {
 			var browser = window.gBrowser;
 			var currentTab = browser.selectedTab;
 			var newTab = browser.addTab(params.searchUrl, {
@@ -268,4 +301,4 @@ var contextsearch = {
 		return {searchUrl: finalUrl, postData: postData};
 	}
 };
-window.addEventListener("load", contextsearch.load, true);
+window.addEventListener("load", Contextsearch, false);
