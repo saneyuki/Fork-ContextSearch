@@ -35,7 +35,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var Contextsearch = {
+var contextsearch = {
 
 	handleEvent: function (aEvent) {
 		switch (aEvent.type) {
@@ -219,7 +219,7 @@ var Contextsearch = {
 
 			popup.insertBefore(menuitem, popup.firstChild);
 			menuitem.engine = engines[i];
-			menuitem.setAttribute("onclick", "return Contextsearch.menuitemclick(event);");
+			menuitem.setAttribute("onclick", "return contextsearch.menuitemclick(event);");
 		}
 	},
 
@@ -301,4 +301,4 @@ var Contextsearch = {
 		return {searchUrl: finalUrl, postData: postData};
 	}
 };
-window.addEventListener("load", Contextsearch, false);
+window.addEventListener("load", contextsearch, false);
