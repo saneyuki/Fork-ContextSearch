@@ -1,2 +1,3 @@
-overlay	chrome://browser/content/browser.xul	chrome://contextsearch/content/contextsearch.xul
-content	contextsearch	chrome/content/
+content contextsearch    jar:chrome/contextsearch.jar!/content/
+
+overlay chrome://browser/content/browser.xul    chrome://contextsearch/content/contextsearch.xul
