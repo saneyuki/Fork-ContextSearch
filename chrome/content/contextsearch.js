@@ -127,11 +127,6 @@ var contextsearch = {
 				engineName =  ss.currentEngine.name; 
 			}
 
-			// Firefox 2.0
-			else if (BrowserSearch.getSearchBar && BrowserSearch.getSearchBar()) {
-				engineName =  ss.currentEngine.name;
-			}
-
 			// Fallback in any other case, or if functions yield false/null
 			else {
 				engineName = ss.defaultEngine.name;
