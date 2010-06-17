@@ -269,9 +269,9 @@ var contextsearch = {
 			                referrerURI          : null,
 			                charset              : null,
 			                postData             : params.postData,
-			                inBackground         : currentTab,
+			                ownerTab             : currentTab,
 			                allowThirdPartyFixup : false,
-			                relatedToCurrent     : false
+			                relatedToCurrent     : false,
 			           });
 
 			if (loadInForeground && newTab != null) {
@@ -299,6 +299,6 @@ var contextsearch = {
 		}
 
 		return {searchUrl: finalUrl, postData: postData};
-	}
+	},
 };
 window.addEventListener("load", contextsearch, false);
