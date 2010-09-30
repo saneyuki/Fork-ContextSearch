@@ -63,14 +63,19 @@ var contextsearch = {
 		                          .getService(Components.interfaces.nsIPrefService);
 	},
 
-	get contextitem () {
-		delete this.contextitem;
-		return this.contextitem = document.getElementById("context-searchmenu");
+	get ctxMenu () {
+		delete this.ctxMenu;
+		return this.ctxMenu = document.getElementById("context-searchmenu");
 	},
 
-	get popup () {
-		delete this.popup;
-		return this.popup = document.getElementById("context-searchpopup");
+	get ctxPopup () {
+		delete this.ctxPopup;
+		return this.ctxPopup = document.getElementById("context-searchpopup");
+	},
+
+	get ctxItemSearchSelect () {
+		delete this.ctxItemSearchSelect;
+		return this.ctxItemSearchSelect = document.getElementById("context-searchselect");
 	},
 
 	get hideMenuItem () {
@@ -102,12 +107,12 @@ var contextsearch = {
 
 			this.rebuildmenu();
 			this.setupDefaultMenuItem(selectedText);
-			this.contextitem.setAttribute("label", menuLabel);
-			this.contextitem.setAttribute("hidden","false");
+			this.ctxMenu.setAttribute("label", menuLabel);
+			this.ctxMenu.setAttribute("hidden","false");
 		}
 
 		else {
-			this.contextitem.setAttribute("hidden","true");
+			this.ctxMenu.setAttribute("hidden","true");
 		}
 	},
 
@@ -178,7 +183,7 @@ var contextsearch = {
 	},
 
 	setupDefaultMenuItem: function (selectedText) {
-		var menuItem = document.getElementById("context-searchselect");
+		var menuItem = this.ctxItemSearchSelect;
 
 		// only go to this effort if pref is flipped
 		if (this.hideMenuItem == false) {
@@ -199,7 +204,7 @@ var contextsearch = {
 	rebuildmenu: function () {
 		const kXULNS = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
 
-		var popup = this.popup;
+		var popup = this.ctxPopup;
 		var engines = this.searchService.getVisibleEngines({ });
 
 		// clear menu
