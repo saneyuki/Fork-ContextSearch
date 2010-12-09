@@ -277,11 +277,10 @@ var contextsearch = {
 		var selectedText = this.getBrowserSelection(null, aEvent);
 		var params = this.getSearchParams(aEvent.target.engine, selectedText);
 
-		if (this.isEnabledTreeStyleTab) {
-			var autoAttachSearchResult = this.prefService.getIntPref("extensions.treestyletab.autoAttachSearchResultAsChildren");
-			if (autoAttachSearchResult != 0) {
-				TreeStyleTabService.readyToOpenChildTab();
-			}
+		if (this.isEnabledTreeStyleTab &&
+		    this.prefBranch.getBoolPref("treestyletab.searchResultAsChildren")
+		) {
+			TreeStyleTabService.readyToOpenChildTab();
 			openUILinkIn(params.searchUrl, where, null, params.postData);
 			TreeStyleTabService.stopToOpenChildTab();
 		}
