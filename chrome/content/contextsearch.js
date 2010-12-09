@@ -20,6 +20,7 @@
  *
  * Contributor(s):
  *   Ben Basson <ben@basson.at>
+ *   saneyuki_s
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -252,36 +253,19 @@ var contextsearch = {
 		if (!aEvent.target.id) {
 			return;
 		}
-
+		var where = this._whereToOpenLink(aEvent);
 		var params = this.getSearchParams(aEvent.target.engine, this.getBrowserSelection(null, aEvent));
-		var loadInBackgroundPref = this.prefService.getBoolPref("browser.tabs.loadInBackground");
-		var loadInForeground = false;
+		openUILinkIn(params.searchUrl, where, null, params.postData);
+	},
 
-		if (aEvent.button == undefined) {
-			loadInForeground = loadInBackgroundPref ? aEvent.ctrlKey : !aEvent.ctrlKey;
-		}
-		else {
-			loadInForeground = loadInBackgroundPref ? true : false;
-		}
-
-		if (aEvent.shiftKey) {
-			openNewWindowWith(params.searchUrl, null, params.postData, false);
-		}
-	    else {
-			var browser = window.gBrowser;
-			var currentTab = browser.selectedTab;
-			var newTab = browser.addTab(params.searchUrl, {
-			                referrerURI          : null,
-			                charset              : null,
-			                postData             : params.postData,
-			                ownerTab             : currentTab,
-			                allowThirdPartyFixup : false,
-			                relatedToCurrent     : false,
-			           });
-
-			if (loadInForeground && newTab != null) {
-				browser.selectedTab = newTab;
-			}
+	_whereToOpenLink: function (aEvent) {
+		var where = whereToOpenLink(aEvent, false, true);
+		var loadInBackground = this.prefService.getBoolPref("browser.tabs.loadInBackground");
+		switch (where) {
+			case "current":
+				return loadInBackground ? "tabshifted" : "tab";
+			default: 
+				return where;
 		}
 	},
 
