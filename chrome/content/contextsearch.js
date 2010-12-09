@@ -64,6 +64,13 @@ var contextsearch = {
 		                          .getService(Components.interfaces.nsIPrefService);
 	},
 
+	PREF_BRANCH_NAME: "extensions.contextsearch.",
+	get prefBranch () {
+		delete this.prefBranch;
+		return this.prefBranch = this.prefService.getBranch(this.PREF_BRANCH_NAME)
+		                         .QueryInterface(Components.interfaces.nsIPrefBranch2);
+	},
+
 	get ctxMenu () {
 		delete this.ctxMenu;
 		return this.ctxMenu = document.getElementById("context-searchmenu");
@@ -81,7 +88,7 @@ var contextsearch = {
 
 	get hideMenuItem () {
 		delete this.hideMenuItem;
-		return this.hideMenuItem = this.prefService.getBoolPref("extensions.contextsearch.hideStandardContextItem");
+		return this.hideMenuItem = this.prefBranch.getBoolPref("hideStandardContextItem");
 	},
 
 	onLoad: function () {
@@ -254,7 +261,9 @@ var contextsearch = {
 			return;
 		}
 		var where = this._whereToOpenLink(aEvent);
-		var params = this.getSearchParams(aEvent.target.engine, this.getBrowserSelection(null, aEvent));
+		var selectedText = this.getBrowserSelection(null, aEvent);
+		var params = this.getSearchParams(aEvent.target.engine, selectedText);
+
 		openUILinkIn(params.searchUrl, where, null, params.postData);
 	},
 
