@@ -208,29 +208,28 @@ var contextsearch = {
 	},
 
 	rebuildmenu: function () {
-		const kXULNS = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
-
 		var popup = this.ctxPopup;
-		var engines = this.searchService.getVisibleEngines({ });
+		var engines = this.searchService.getVisibleEngines({});
 
 		// clear menu
 		while (popup.firstChild) {
 			popup.removeChild(popup.firstChild);
 		}
 
-		for (var i = engines.length - 1; i >= 0; --i) {
-			var menuitem = document.createElementNS(kXULNS, "menuitem");
-			menuitem.setAttribute("label", engines[i].name);
-			menuitem.setAttribute("id", engines[i].name);
+		for (var i = 0; i < engines.length; i++) {
+			var engine = engines[i];
+			var menuitem = document.createElement("menuitem");
+			menuitem.setAttribute("id", "contextsearch-" + engine.name);
+			menuitem.setAttribute("label", engine.name);
 			menuitem.setAttribute("class", "menuitem-iconic contextsearch-menuitem");
 
-			if (engines[i].iconURI) {
-				menuitem.setAttribute("image", engines[i].iconURI.spec);
+			if (engine.iconURI) {
+				menuitem.setAttribute("image", engine.iconURI.spec);
 			}
 
-			popup.insertBefore(menuitem, popup.firstChild);
-			menuitem.engine = engines[i];
+			menuitem.engine = engine;
 			menuitem.setAttribute("onclick", "return contextsearch.menuitemclick(event);");
+			popup.appendChild(menuitem);
 		}
 	},
 
