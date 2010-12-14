@@ -273,19 +273,22 @@ var contextsearch = {
 		if (!aEvent.target.id) {
 			return;
 		}
+
 		var where = this._whereToOpenLink(aEvent);
 		var selectedText = this.getBrowserSelection(null, aEvent);
-		var params = this.getSearchParams(aEvent.target.engine, selectedText);
+		var searchSubmission = aEvent.target.engine.getSubmission(selectedText, null);
+		var searchUrl = searchSubmission.uri.spec;
+		var postData = searchSubmission.postData;
 
 		if (this.isEnabledTreeStyleTab &&
 		    this.prefBranch.getBoolPref("treestyletab.searchResultAsChildren")
 		) {
 			TreeStyleTabService.readyToOpenChildTab();
-			openUILinkIn(params.searchUrl, where, null, params.postData);
+			openUILinkIn(searchUrl, where, null, postData);
 			TreeStyleTabService.stopToOpenChildTab();
 		}
 		else {
-			openUILinkIn(params.searchUrl, where, null, params.postData);
+			openUILinkIn(searchUrl, where, null, postData);
 		}
 	},
 
@@ -298,27 +301,6 @@ var contextsearch = {
 			default: 
 				return where;
 		}
-	},
-
-	getSearchParams: function (searchEngine, searchValue) {
-		var searchSubmission = searchEngine.getSubmission(searchValue, null);
-		var postData = searchSubmission.postData ? searchSubmission.postData : null;
-		var searchUrl = searchSubmission.uri.spec;
-		var finalUrl = new String();
-
-		if (!searchValue) {
-			var uri = Components.classes['@mozilla.org/network/standard-url;1']
-			          .createInstance(Components.interfaces.nsIURI);
-			uri.spec = searchUrl;
-			searchUrl = uri.host;
-		}
-
-		// recommendation by Mat on AMO
-		for (var i = 0; i < searchUrl.length; i++) {
-			finalUrl += (searchUrl[i] == "+") ? "%20" : searchUrl[i];
-		}
-
-		return {searchUrl: finalUrl, postData: postData};
 	},
 };
 window.addEventListener("load", contextsearch, false);
