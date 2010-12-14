@@ -256,6 +256,19 @@ var contextsearch = {
 		return true;
 	},
 
+	get isEnabledTreeStyleTab () {
+		delete this.isEnabledTreeStyleTab;
+
+		var isEnabled;
+		if ("TreeStyleTabService" in window) {
+			isEnabled = true;
+		}
+		else {
+			isEnabled = false;
+		}
+		return this.isEnabledTreeStyleTab = isEnabled;
+	},
+
 	search: function (aEvent) {
 		if (!aEvent.target.id) {
 			return;
@@ -264,7 +277,16 @@ var contextsearch = {
 		var selectedText = this.getBrowserSelection(null, aEvent);
 		var params = this.getSearchParams(aEvent.target.engine, selectedText);
 
-		openUILinkIn(params.searchUrl, where, null, params.postData);
+		if (this.isEnabledTreeStyleTab &&
+		    this.prefBranch.getBoolPref("treestyletab.searchResultAsChildren")
+		) {
+			TreeStyleTabService.readyToOpenChildTab();
+			openUILinkIn(params.searchUrl, where, null, params.postData);
+			TreeStyleTabService.stopToOpenChildTab();
+		}
+		else {
+			openUILinkIn(params.searchUrl, where, null, params.postData);
+		}
 	},
 
 	_whereToOpenLink: function (aEvent) {
