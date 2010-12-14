@@ -151,8 +151,7 @@ var contextsearch = {
 
 	isTextInputNode: function (aNode) {
 		try {
-			return ((aNode instanceof HTMLInputElement && aNode.type == "text")
-			        || aNode instanceof HTMLTextAreaElement);
+			return ((aNode instanceof HTMLInputElement) || (aNode instanceof HTMLTextAreaElement));
 		} catch (e) {
 			return false;
 		}
