@@ -124,7 +124,7 @@ var contextsearch = {
 		}
 	},
 
-	getBrowserSelection: function (aChars, aEvent) {
+	getBrowserSelection: function (aCharCount, aEvent) {
 		var focusedElement = document.commandDispatcher.focusedElement;
 		var selectedText = null;
 
@@ -134,17 +134,16 @@ var contextsearch = {
 			var startPos = focusedElement.selectionStart;
 			var endPos = focusedElement.selectionEnd;
 
-			if (aChars && aChars < endPos - startPos) {
-				endPos = startPos + (aChars <= 150 ? aChars : 150);
+			if (aCharCount && (aCharCount < (endPos - startPos))) {
+				endPos = startPos + ((aCharCount <= 150) ? aCharCount : 150);
 			}
 
 			selectedText = focusedElement.value.substring(startPos, endPos);
 		}
-
 		// if an event is passed from the menu, we can assume there's a selection
 		// otherwise check text is selected
 		else if (aEvent || (gContextMenu && gContextMenu.isTextSelected)) {
-			selectedText = getBrowserSelection(aChars);
+			selectedText = getBrowserSelection(aCharCount);
 		}
 
 		return selectedText;
@@ -161,7 +160,7 @@ var contextsearch = {
 
 	textSelectedInNode: function (aNode) {
 		try {
-			return (aNode.selectionStart < aNode.selectionEnd)
+			return (aNode.selectionStart < aNode.selectionEnd);
 		} catch (e) {
 			return false;
 		}
