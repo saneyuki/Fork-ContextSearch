@@ -225,7 +225,7 @@ var contextsearch = {
 			menuitem.setAttribute("class", "menuitem-iconic contextsearch-menuitem");
 
 			if (engines[i].iconURI) {
-				menuitem.setAttribute("src", engines[i].iconURI.spec);
+				menuitem.setAttribute("image", engines[i].iconURI.spec);
 			}
 
 			popup.insertBefore(menuitem, popup.firstChild);
