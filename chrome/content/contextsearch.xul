@@ -39,12 +39,17 @@
 
 <!DOCTYPE window SYSTEM "chrome://browser/locale/browser.dtd">
 
+<?xml-stylesheet href="chrome://contextsearch/content/gnome-fix.css" type="text/css"?>   
+
 <overlay id="contextsearch"
   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   
   <script type="application/x-javascript"
     src="chrome://contextsearch/content/contextsearch.js"/>
     
+  <script type="application/x-javascript"
+    src="chrome://contextsearch/content/genericprefobserver.js"/>
+   
   <popup id="contentAreaContextMenu">
   
     <menu id="context-searchmenu"
@@ -57,5 +62,12 @@
     </menu>
     
   </popup>
+  
+  <window id="main-window">
+    
+    <stringbundle id="contextSearchStrings"
+      src="chrome://contextsearch/locale/contextsearch.properties"/>
+      
+  </window>
     
 </overlay>

@@ -6,13 +6,13 @@
   <Description about="urn:mozilla:install-manifest">
   
     <em:id>{902D2C4A-457A-4EF9-AD43-7014562929FF}</em:id>
-    <em:version>0.4.5</em:version>
+    <em:version>0.4.6</em:version>
     
     <em:targetApplication>
       <Description>
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
-        <em:minVersion>2.0</em:minVersion>
-        <em:maxVersion>3.6.*</em:maxVersion>
+        <em:minVersion>3.6</em:minVersion>
+        <em:maxVersion>4.0.*</em:maxVersion>
       </Description>
     </em:targetApplication>
     
