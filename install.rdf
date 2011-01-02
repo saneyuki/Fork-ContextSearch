@@ -4,7 +4,7 @@
      xmlns:em="http://www.mozilla.org/2004/em-rdf#">
 	<Description about="urn:mozilla:install-manifest">
 
-		<em:id>{902D2C4A-457A-4EF9-AD43-7014562929FF}</em:id>
+		<em:id>contextsearch@saneyuki_s</em:id>
 		<em:version>0.4.5.1</em:version>
 
 		<em:targetApplication>
@@ -16,9 +16,10 @@
 		</em:targetApplication>
 
 		<em:name>Context Search</em:name>
-		<em:description>Expands the context menu's 'Search for' item into a list of search engines.</em:description>
+		<em:description>Expands the context menu's 'Search for' item into a list of search engines. *Fork version.</em:description>
 		<em:creator>Ben Basson</em:creator>
-		<em:homepageURL>http://www.cusser.net/</em:homepageURL>
+		<em:developer>saneyuki_s</em:developer>
+		<!--<em:homepageURL></em:homepageURL>-->
 
 	</Description>
 </RDF>
