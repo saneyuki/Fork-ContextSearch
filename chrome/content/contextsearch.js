@@ -94,6 +94,7 @@ var ContextSearch = {
 	onLoad: function () {
 		window.removeEventListener("load", this, false);
 		document.getElementById("contentAreaContextMenu").addEventListener("popupshowing", this, false);
+		this.rebuildmenu();
 		window.addEventListener("unload", this, false);
 	},
 
@@ -112,7 +113,6 @@ var ContextSearch = {
 
 			var menuLabel = this.getMenuItemLabel(selectedText);
 
-			this.rebuildmenu();
 			this.setupDefaultMenuItem();
 			this.ctxMenu.setAttribute("label", menuLabel);
 			this.ctxMenu.removeAttribute("hidden");
