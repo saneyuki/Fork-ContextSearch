@@ -111,7 +111,7 @@ var ContextSearch = {
 				selectedText = selectedText.substr(0,15) + "...";
 			}
 
-			var menuLabel = this.getMenuItemLabel(selectedText, false);
+			var menuLabel = this.getMenuItemLabel(selectedText);
 
 			this.rebuildmenu();
 			this.setupDefaultMenuItem();
@@ -161,26 +161,12 @@ var ContextSearch = {
 	},
 
 	// shamelessly ripped from browser.js
-	getMenuItemLabel: function (aString, aUseEngineName) {
+	getMenuItemLabel: function (aString) {
 		var engineName = "";
-
-		if (aUseEngineName) {
-			var ss = this.searchService;
-
-			// Firefox 3.0
-			if (window.isElementVisible && isElementVisible(BrowserSearch.searchBar)) {
-				engineName =  ss.currentEngine.name; 
-			}
-
-			// Fallback in any other case, or if functions yield false/null
-			else {
-				engineName = ss.defaultEngine.name;
-			}
-		}
 
 		// format "Search <engine> for <selection>" string to show in menu
 		var menuLabel = gNavigatorBundle.getFormattedString("contextMenuSearchText", [engineName, aString]);
-		return aUseEngineName ? menuLabel : menuLabel.replace(/\s\s/," ");
+		return menuLabel.replace(/\s\s/, " ");
 	},
 
 	setupDefaultMenuItem: function () {
