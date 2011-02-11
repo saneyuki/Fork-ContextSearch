@@ -103,10 +103,9 @@ var ContextSearch = {
 	},
 
 	popuphandler: function() {
-		var selectedText = this.getBrowserSelection(16);
-
 		// truncate text for label and set up menu items as appropriate
-		if (selectedText != null && selectedText.length > 0) {
+		if (gContextMenu.isTextSelected || gContextMenu.onTextInput) {
+			var selectedText = this.getBrowserSelection(16);
 			if (selectedText.length > 15) {
 				selectedText = selectedText.substr(0,15) + "...";
 			}
@@ -124,12 +123,11 @@ var ContextSearch = {
 	},
 
 	getBrowserSelection: function (aCharCount, aEvent) {
-		var focusedElement = document.commandDispatcher.focusedElement;
 		var selectedText = null;
 
 		// get text selection from input node
-		if (this.isTextInInputNode(focusedElement) 
-		    && this.textSelectedInNode(focusedElement)) {
+		if (gContextMenu.onTextInput) {
+			var focusedElement = document.commandDispatcher.focusedElement;
 			var startPos = focusedElement.selectionStart;
 			var endPos = focusedElement.selectionEnd;
 
@@ -141,22 +139,11 @@ var ContextSearch = {
 		}
 		// if an event is passed from the menu, we can assume there's a selection
 		// otherwise check text is selected
-		else if (aEvent || (gContextMenu && gContextMenu.isTextSelected)) {
+		else if (aEvent || gContextMenu.isTextSelected) {
 			selectedText = getBrowserSelection(aCharCount);
 		}
 
 		return selectedText;
-	},
-
-	isTextInInputNode: function (aNode) {
-		var nodeIsInputElm = ((aNode instanceof HTMLInputElement) ||
-		                      (aNode instanceof HTMLTextAreaElement));
-		return nodeIsInputElm ? true: false;
-	},
-
-	textSelectedInNode: function (aNode) {
-		var isTextSelected = (aNode.selectionStart < aNode.selectionEnd);
-		return isTextSelected ? true : false;
 	},
 
 	// shamelessly ripped from browser.js
