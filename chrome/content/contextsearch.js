@@ -129,7 +129,7 @@ var ContextSearch = {
 		var selectedText = null;
 
 		// get text selection from input node
-		if (this.isTextInputNode(focusedElement) 
+		if (this.isTextInInputNode(focusedElement) 
 		    && this.textSelectedInNode(focusedElement)) {
 			var startPos = focusedElement.selectionStart;
 			var endPos = focusedElement.selectionEnd;
@@ -149,20 +149,15 @@ var ContextSearch = {
 		return selectedText;
 	},
 
-	isTextInputNode: function (aNode) {
-		try {
-			return ((aNode instanceof HTMLInputElement) || (aNode instanceof HTMLTextAreaElement));
-		} catch (e) {
-			return false;
-		}
+	isTextInInputNode: function (aNode) {
+		var nodeIsInputElm = ((aNode instanceof HTMLInputElement) ||
+		                      (aNode instanceof HTMLTextAreaElement));
+		return nodeIsInputElm ? true: false;
 	},
 
 	textSelectedInNode: function (aNode) {
-		try {
-			return (aNode.selectionStart < aNode.selectionEnd);
-		} catch (e) {
-			return false;
-		}
+		var isTextSelected = (aNode.selectionStart < aNode.selectionEnd);
+		return isTextSelected ? true : false;
 	},
 
 	// shamelessly ripped from browser.js
