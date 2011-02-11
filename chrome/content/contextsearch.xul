@@ -54,7 +54,7 @@
 		      accesskey="&search.accesskey;">
 
 			<menupopup id="context-searchpopup"
-			           oncommand="return ContextSearch.search(event);"/>
+			           oncommand="ContextSearch.onCommand(event);"/>
 
 		</menu>
 

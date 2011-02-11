@@ -223,29 +223,12 @@ var ContextSearch = {
 			}
 
 			menuitem.engine = engine;
-			menuitem.setAttribute("onclick", "return ContextSearch.menuitemclick(event);");
 			popup.appendChild(menuitem);
 		}
 	},
 
-	menuitemclick: function (aEvent) {
-		// only process middle clicks
-		if (aEvent.button != 1) {
-			return false;
-		}
-
-		// hide context menu
-		var node = aEvent.target.parentNode;
-		while (node.parentNode) {
-			if (node.hidePopup) {
-				node.hidePopup();
-			}
-			node = node.parentNode;
-		}
-
-		// continue with search
+	onCommand: function (aEvent) {
 		this.search(aEvent);
-		return true;
 	},
 
 	get isEnabledTreeStyleTab () {
