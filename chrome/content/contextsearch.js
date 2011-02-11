@@ -114,7 +114,7 @@ var ContextSearch = {
 			var menuLabel = this.getMenuItemLabel(selectedText, false);
 
 			this.rebuildmenu();
-			this.setupDefaultMenuItem(selectedText);
+			this.setupDefaultMenuItem();
 			this.ctxMenu.setAttribute("label", menuLabel);
 			this.ctxMenu.setAttribute("hidden","false");
 		}
@@ -183,23 +183,15 @@ var ContextSearch = {
 		return aUseEngineName ? menuLabel : menuLabel.replace(/\s\s/," ");
 	},
 
-	setupDefaultMenuItem: function (selectedText) {
+	setupDefaultMenuItem: function () {
 		var menuItem = this.ctxItemSearchSelect;
 
-		// only go to this effort if pref is flipped
-		if (this.hideMenuItem == false) {
-			var menuLabel = this.getMenuItemLabel(selectedText, true);
-
-			// set label, show item and return
-			menuItem.setAttribute("label", menuLabel);
-			menuItem.setAttribute("hidden","false");
+		if (!this.hideMenuItem) {
+			menuItem.removeAttribute("hidden");
 		}
-
 		else {
-			menuItem.setAttribute("hidden","true");
+			menuItem.setAttribute("hidden", "true");
 		}
-
-		return true;
 	},
 
 	rebuildmenu: function () {
