@@ -251,13 +251,7 @@ var ContextSearch = {
 	get isEnabledTreeStyleTab () {
 		delete this.isEnabledTreeStyleTab;
 
-		var isEnabled;
-		if ("TreeStyleTabService" in window) {
-			isEnabled = true;
-		}
-		else {
-			isEnabled = false;
-		}
+		var isEnabled = ("TreeStyleTabService" in window) ? true : false;
 		return this.isEnabledTreeStyleTab = isEnabled;
 	},
 
