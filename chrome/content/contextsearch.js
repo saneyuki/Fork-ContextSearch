@@ -104,9 +104,11 @@ var ContextSearch = {
 	},
 
 	popuphandler: function() {
+		var selectedText = this.getBrowserSelection(16);
 		// truncate text for label and set up menu items as appropriate
-		if (gContextMenu.isTextSelected || gContextMenu.onTextInput) {
-			var selectedText = this.getBrowserSelection(16);
+		if (gContextMenu.isTextSelected ||
+		    (gContextMenu.onTextInput && selectedText.length > 0)) {
+
 			if (selectedText.length > 15) {
 				selectedText = selectedText.substr(0,15) + "...";
 			}
