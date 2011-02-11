@@ -116,11 +116,10 @@ var ContextSearch = {
 			this.rebuildmenu();
 			this.setupDefaultMenuItem();
 			this.ctxMenu.setAttribute("label", menuLabel);
-			this.ctxMenu.setAttribute("hidden","false");
+			this.ctxMenu.removeAttribute("hidden");
 		}
-
 		else {
-			this.ctxMenu.setAttribute("hidden","true");
+			this.ctxMenu.setAttribute("hidden", "true");
 		}
 	},
 
