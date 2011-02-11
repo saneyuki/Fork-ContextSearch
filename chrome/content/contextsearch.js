@@ -122,8 +122,8 @@ var ContextSearch = {
 		}
 	},
 
-	getBrowserSelection: function (aCharCount, aEvent) {
-		var selectedText = null;
+	getBrowserSelection: function (aCharCount) {
+		var selectedText;
 
 		// get text selection from input node
 		if (gContextMenu.onTextInput) {
@@ -139,7 +139,7 @@ var ContextSearch = {
 		}
 		// if an event is passed from the menu, we can assume there's a selection
 		// otherwise check text is selected
-		else if (aEvent || gContextMenu.isTextSelected) {
+		else if (gContextMenu.isTextSelected) {
 			selectedText = getBrowserSelection(aCharCount);
 		}
 
@@ -208,7 +208,7 @@ var ContextSearch = {
 		}
 
 		var where = this._whereToOpenLink(aEvent);
-		var selectedText = this.getBrowserSelection(null, aEvent);
+		var selectedText = this.getBrowserSelection(null);
 		var searchSubmission = aEvent.target.engine.getSubmission(selectedText, null);
 		var searchUrl = searchSubmission.uri.spec;
 		var postData = searchSubmission.postData;
