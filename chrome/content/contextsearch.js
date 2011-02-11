@@ -38,20 +38,6 @@
 
 var ContextSearch = {
 
-	handleEvent: function (aEvent) {
-		switch (aEvent.type) {
-			case "load":
-				this.onLoad();
-				break;
-			case "popupshowing":
-				this.popuphandler();
-				break;
-			case "unload":
-				this.onUnLoad();
-				break;
-		}
-	},
-
 	get searchService () {
 		delete this.searchService;
 		return this.searchService = Components.classes["@mozilla.org/browser/search-service;1"]
@@ -89,6 +75,20 @@ var ContextSearch = {
 	get hideMenuItem () {
 		delete this.hideMenuItem;
 		return this.hideMenuItem = this.prefBranch.getBoolPref("hideStandardContextItem");
+	},
+
+	handleEvent: function (aEvent) {
+		switch (aEvent.type) {
+			case "load":
+				this.onLoad();
+				break;
+			case "popupshowing":
+				this.popuphandler();
+				break;
+			case "unload":
+				this.onUnLoad();
+				break;
+		}
 	},
 
 	onLoad: function () {
