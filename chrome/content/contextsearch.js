@@ -129,15 +129,20 @@ var ContextSearch = {
 
 		// get text selection from input node
 		if (gContextMenu.onTextInput) {
-			var focusedElement = document.commandDispatcher.focusedElement;
-			var startPos = focusedElement.selectionStart;
-			var endPos = focusedElement.selectionEnd;
+			try {
+				var focusedElement = document.commandDispatcher.focusedElement;
+				var startPos = focusedElement.selectionStart;
+				var endPos = focusedElement.selectionEnd;
 
-			if (aCharCount && (aCharCount < (endPos - startPos))) {
-				endPos = startPos + ((aCharCount <= 150) ? aCharCount : 150);
+				if (aCharCount && (aCharCount < (endPos - startPos))) {
+					endPos = startPos + ((aCharCount <= 150) ? aCharCount : 150);
+				}
+
+				selectedText = focusedElement.value.substring(startPos, endPos);
 			}
-
-			selectedText = focusedElement.value.substring(startPos, endPos);
+			catch (e) {
+				selectedText = getBrowserSelection(aCharCount);
+			}
 		}
 		// if an event is passed from the menu, we can assume there's a selection
 		// otherwise check text is selected
