@@ -83,7 +83,7 @@ var ContextSearch = {
 				this.onLoad();
 				break;
 			case "popupshowing":
-				this.popuphandler();
+				this.onPopup(aEvent);
 				break;
 			case "unload":
 				this.onUnLoad();
@@ -103,7 +103,11 @@ var ContextSearch = {
 		document.getElementById("contentAreaContextMenu").removeEventListener("popupshowing", this, false);
 	},
 
-	popuphandler: function() {
+	onPopup: function(aEvent) {
+		if (aEvent.target.id !== "contentAreaContextMenu") {
+			return;
+		}
+
 		var selectedText = this.getBrowserSelection(16);
 		// truncate text for label and set up menu items as appropriate
 		if (gContextMenu.isTextSelected ||
