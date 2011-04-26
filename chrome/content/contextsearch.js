@@ -35,26 +35,13 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-
+Components.utils.import("resource://gre/modules/Services.jsm");
 var ContextSearch = {
-
-	get searchService () {
-		delete this.searchService;
-		return this.searchService = Components.classes["@mozilla.org/browser/search-service;1"]
-		                            .getService(Components.interfaces.nsIBrowserSearchService);
-	},
-
-	get prefService () {
-		delete this.prefService;
-		return this.prefService = Components.classes["@mozilla.org/preferences-service;1"]
-		                          .getService(Components.interfaces.nsIPrefService);
-	},
 
 	PREF_BRANCH_NAME: "extensions.contextsearch.",
 	get prefBranch () {
 		delete this.prefBranch;
-		return this.prefBranch = this.prefService.getBranch(this.PREF_BRANCH_NAME)
-		                         .QueryInterface(Components.interfaces.nsIPrefBranch2);
+		return this.prefBranch = Services.prefs.getBranch(this.PREF_BRANCH_NAME);
 	},
 
 	get ctxMenu () {
@@ -93,9 +80,9 @@ var ContextSearch = {
 
 	onLoad: function () {
 		window.removeEventListener("load", this, false);
+		window.addEventListener("unload", this, false);
 		document.getElementById("contentAreaContextMenu").addEventListener("popupshowing", this, false);
 		this.rebuildmenu();
-		window.addEventListener("unload", this, false);
 	},
 
 	onUnLoad: function () {
@@ -179,7 +166,7 @@ var ContextSearch = {
 
 	rebuildmenu: function () {
 		var popup = this.ctxPopup;
-		var engines = this.searchService.getVisibleEngines({});
+		var engines = Services.search.getVisibleEngines({});
 
 		// clear menu
 		while (popup.firstChild) {
@@ -238,7 +225,7 @@ var ContextSearch = {
 
 	_whereToOpenLink: function (aEvent) {
 		var where = whereToOpenLink(aEvent, false, true);
-		var loadInBackground = this.prefService.getBoolPref("browser.tabs.loadInBackground");
+		var loadInBackground = Services.prefs.getBoolPref("browser.tabs.loadInBackground");
 		switch (where) {
 			case "current":
 				return loadInBackground ? "tabshifted" : "tab";
