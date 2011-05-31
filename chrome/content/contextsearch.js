@@ -200,9 +200,7 @@ var ContextSearch = {
 
 	get isEnabledTreeStyleTab () {
 		delete this.isEnabledTreeStyleTab;
-
-		var isEnabled = ("TreeStyleTabService" in window) ? true : false;
-		return this.isEnabledTreeStyleTab = isEnabled;
+		return this.isEnabledTreeStyleTab = ("TreeStyleTabService" in window) ? true : false;
 	},
 
 	search: function (aEvent) {
