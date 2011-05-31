@@ -100,7 +100,7 @@ var ContextSearch = {
 			return;
 		}
 
-		var selectedText = this.getBrowserSelection(16);
+		let selectedText = this.getBrowserSelection(16);
 		// truncate text for label and set up menu items as appropriate
 		if (gContextMenu.isTextSelected ||
 		    (gContextMenu.onTextInput && selectedText.length > 0)) {
@@ -109,7 +109,7 @@ var ContextSearch = {
 				selectedText = selectedText.substr(0,15) + "...";
 			}
 
-			var menuLabel = this.getMenuItemLabel(selectedText);
+			let menuLabel = this.getMenuItemLabel(selectedText);
 
 			this.setupDefaultMenuItem();
 			this.ctxMenu.setAttribute("label", menuLabel);
@@ -121,14 +121,14 @@ var ContextSearch = {
 	},
 
 	getBrowserSelection: function (aCharCount) {
-		var selectedText;
+		let selectedText;
 
 		// get text selection from input node
 		if (gContextMenu.onTextInput) {
 			try {
-				var focusedElement = document.commandDispatcher.focusedElement;
-				var startPos = focusedElement.selectionStart;
-				var endPos = focusedElement.selectionEnd;
+				let focusedElement = document.commandDispatcher.focusedElement;
+				let startPos = focusedElement.selectionStart;
+				let endPos = focusedElement.selectionEnd;
 
 				if (aCharCount && (aCharCount < (endPos - startPos))) {
 					endPos = startPos + ((aCharCount <= 150) ? aCharCount : 150);
@@ -151,15 +151,15 @@ var ContextSearch = {
 
 	// shamelessly ripped from browser.js
 	getMenuItemLabel: function (aString) {
-		var engineName = "";
+		let engineName = "";
 
 		// format "Search <engine> for <selection>" string to show in menu
-		var menuLabel = gNavigatorBundle.getFormattedString("contextMenuSearchText", [engineName, aString]);
+		let menuLabel = gNavigatorBundle.getFormattedString("contextMenuSearchText", [engineName, aString]);
 		return menuLabel.replace(/\s\s/, " ");
 	},
 
 	setupDefaultMenuItem: function () {
-		var menuItem = this.ctxItemSearchSelect;
+		let menuItem = this.ctxItemSearchSelect;
 
 		if (!this.hideMenuItem) {
 			menuItem.removeAttribute("hidden");
@@ -170,17 +170,17 @@ var ContextSearch = {
 	},
 
 	rebuildmenu: function () {
-		var popup = this.ctxPopup;
-		var engines = Services.search.getVisibleEngines({});
+		let popup = this.ctxPopup;
+		let engines = Services.search.getVisibleEngines({});
 
 		// clear menu
 		while (popup.firstChild) {
 			popup.removeChild(popup.firstChild);
 		}
 
-		for (var i = 0; i < engines.length; i++) {
-			var engine = engines[i];
-			var menuitem = document.createElement("menuitem");
+		for (let i = 0; i < engines.length; i++) {
+			let engine = engines[i];
+			let menuitem = document.createElement("menuitem");
 			menuitem.setAttribute("id", "contextsearch-engine:" + engine.name);
 			menuitem.setAttribute("label", engine.name);
 			menuitem.setAttribute("class", "menuitem-iconic contextsearch-menuitem");
@@ -208,11 +208,11 @@ var ContextSearch = {
 			return;
 		}
 
-		var where = this._whereToOpenLink(aEvent);
-		var selectedText = this.getBrowserSelection(null);
-		var searchSubmission = aEvent.target.engine.getSubmission(selectedText, null);
-		var searchUrl = searchSubmission.uri.spec;
-		var postData = searchSubmission.postData;
+		let where = this._whereToOpenLink(aEvent);
+		let selectedText = this.getBrowserSelection(null);
+		let searchSubmission = aEvent.target.engine.getSubmission(selectedText, null);
+		let searchUrl = searchSubmission.uri.spec;
+		let postData = searchSubmission.postData;
 
 		if (this.isEnabledTreeStyleTab &&
 		    this.prefBranch.getBoolPref("treestyletab.searchResultAsChildren")
@@ -227,8 +227,8 @@ var ContextSearch = {
 	},
 
 	_whereToOpenLink: function (aEvent) {
-		var where = whereToOpenLink(aEvent, false, true);
-		var loadInBackground = Services.prefs.getBoolPref("browser.tabs.loadInBackground");
+		let where = whereToOpenLink(aEvent, false, true);
+		let loadInBackground = Services.prefs.getBoolPref("browser.tabs.loadInBackground");
 		switch (where) {
 			case "current":
 				return loadInBackground ? "tabshifted" : "tab";
