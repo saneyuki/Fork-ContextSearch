@@ -75,6 +75,9 @@ var ContextSearch = {
 			case "unload":
 				this.onUnLoad();
 				break;
+			case "command":
+				this.onCommand(aEvent);
+				break;
 		}
 	},
 
@@ -82,12 +85,14 @@ var ContextSearch = {
 		window.removeEventListener("load", this, false);
 		window.addEventListener("unload", this, false);
 		document.getElementById("contentAreaContextMenu").addEventListener("popupshowing", this, false);
+		document.getElementById("context-searchpopup").addEventListener("command", this, false);
 		this.rebuildmenu();
 	},
 
 	onUnLoad: function () {
 		window.removeEventListener("unload", this, false);
 		document.getElementById("contentAreaContextMenu").removeEventListener("popupshowing", this, false);
+		document.getElementById("context-searchpopup").removeEventListener("command", this, false);
 	},
 
 	onPopup: function(aEvent) {

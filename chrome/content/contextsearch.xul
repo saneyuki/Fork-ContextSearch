@@ -48,16 +48,11 @@
 	        src="chrome://contextsearch/content/contextsearch.js"/>
 
 	<popup id="contentAreaContextMenu">
-
 		<menu id="context-searchmenu"
 		      insertafter="context-searchselect"
 		      accesskey="&search.accesskey;">
-
-			<menupopup id="context-searchpopup"
-			           oncommand="ContextSearch.onCommand(event);"/>
-
+			<menupopup id="context-searchpopup"/>
 		</menu>
-
 	</popup>
 
 </overlay>
