@@ -64,6 +64,12 @@ var ContextSearch = {
 		return this.hideMenuItem = this.prefBranch.getBoolPref("hideStandardContextItem");
 	},
 
+
+	get searchEnginesMap () {
+		delete this.searchEnginesMap;
+		return this.searchEnginesMap = new WeakMap();
+	},
+
 	handleEvent: function (aEvent) {
 		switch (aEvent.type) {
 			case "load":
@@ -189,7 +195,7 @@ var ContextSearch = {
 				menuitem.setAttribute("image", engine.iconURI.spec);
 			}
 
-			menuitem.engine = engine;
+			this.searchEnginesMap.set(menuitem, engine);
 			popup.appendChild(menuitem);
 		}
 	},
@@ -210,7 +216,7 @@ var ContextSearch = {
 
 		let where = this._whereToOpenLink(aEvent);
 		let selectedText = this.getBrowserSelection(null);
-		let searchSubmission = aEvent.target.engine.getSubmission(selectedText, null);
+		let searchSubmission = this.searchEnginesMap.get(aEvent.target).getSubmission(selectedText, null);
 		let searchUrl = searchSubmission.uri.spec;
 		let postData = searchSubmission.postData;
 
