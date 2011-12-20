@@ -187,7 +187,7 @@ var ContextSearch = {
 		for (let i = 0; i < engines.length; i++) {
 			let engine = engines[i];
 			let menuitem = document.createElement("menuitem");
-			menuitem.setAttribute("id", "contextsearch-engine:" + engine.name);
+			menuitem.setAttribute("id", "contextsearch-engine:" + encodeURIComponent(engine.name));
 			menuitem.setAttribute("label", engine.name);
 			menuitem.setAttribute("class", "menuitem-iconic contextsearch-menuitem");
 
