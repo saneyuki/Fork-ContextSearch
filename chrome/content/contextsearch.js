@@ -35,8 +35,13 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 Components.utils.import("resource://gre/modules/Services.jsm");
 var ContextSearch = {
+
+	QueryInterface: XPCOMUtils.generateQI([Components.interfaces.nsIObserver,
+	                                       Components.interfaces.nsISupportsWeakReference,
+	                                       Components.interfaces.nsISupports]),
 
 	PREF_BRANCH_NAME: "extensions.contextsearch.",
 	get prefBranch () {
@@ -67,10 +72,15 @@ var ContextSearch = {
 		return this.hideMenuItem = this.prefBranch.getBoolPref("hideStandardContextItem");
 	},
 
-
 	get searchEnginesMap () {
 		delete this.searchEnginesMap;
 		return this.searchEnginesMap = new WeakMap();
+	},
+
+	observe: function (aSubject, aTopic, aData) {
+		if (aTopic == "browser-search-engine-modified") {
+			this.rebuildmenu();
+		}
 	},
 
 	handleEvent: function (aEvent) {
@@ -92,16 +102,23 @@ var ContextSearch = {
 
 	onLoad: function () {
 		window.removeEventListener("load", this, false);
+
 		window.addEventListener("unload", this, false);
 		document.getElementById("contentAreaContextMenu").addEventListener("popupshowing", this, false);
 		document.getElementById("context-searchpopup").addEventListener("command", this, false);
+
+		Services.obs.addObserver(this, "browser-search-engine-modified", true);
+
 		this.rebuildmenu();
 	},
 
 	onUnLoad: function () {
 		window.removeEventListener("unload", this, false);
+
 		document.getElementById("contentAreaContextMenu").removeEventListener("popupshowing", this, false);
 		document.getElementById("context-searchpopup").removeEventListener("command", this, false);
+
+		Services.obs.removeObserver(this, "browser-search-engine-modified");
 
 		// Release DOM reference
 		this.ctxMenu  = null;
