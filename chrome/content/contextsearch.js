@@ -40,6 +40,7 @@ Components.utils.import("resource://gre/modules/Services.jsm");
 var ContextSearch = {
 
 	QueryInterface: XPCOMUtils.generateQI([Components.interfaces.nsIObserver,
+	                                       Components.interfaces.nsIDOMEventListener,
 	                                       Components.interfaces.nsISupportsWeakReference,
 	                                       Components.interfaces.nsISupports]),
 
