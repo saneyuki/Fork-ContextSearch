@@ -237,14 +237,19 @@ var ContextSearch = {
 	},
 
 	_whereToOpenLink: function (aEvent) {
+		let rv = "";
 		let where = whereToOpenLink(aEvent, false, true);
-		let loadInBackground = Services.prefs.getBoolPref("browser.tabs.loadInBackground");
 		switch (where) {
 			case "current":
-				return loadInBackground ? "tabshifted" : "tab";
+				let loadInBackground = Services.prefs
+				                       .getBoolPref("browser.tabs.loadInBackground");
+				rv = loadInBackground ? "tabshifted" : "tab";
+				break;
 			default: 
-				return where;
+				rv = where;
+				break;
 		}
+		return rv;
 	},
 };
 window.addEventListener("load", ContextSearch, false);
