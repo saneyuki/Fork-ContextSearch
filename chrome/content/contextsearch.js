@@ -121,28 +121,27 @@ var ContextSearch = {
 	},
 
 	onPopup: function(aEvent) {
-		if (aEvent.target.id !== "contentAreaContextMenu") {
-			return;
-		}
+		if (aEvent.target.id === "contentAreaContextMenu") {
+			let ctxMenu = this.ctxMenu;
+			// truncate text for label and set up menu items as appropriate
+			if (gContextMenu.isTextSelected || gContextMenu.onTextInput) {
+				let selectedText = this.getBrowserSelection(16);
+				if (selectedText.length > 0) {
+					selectedText = (selectedText.length > 15) ?
+					               selectedText.substr(0,15) + "..." : selectedText;
 
-		// truncate text for label and set up menu items as appropriate
-		if (gContextMenu.isTextSelected || gContextMenu.onTextInput) {
-			let selectedText = this.getBrowserSelection(16);
-			if (selectedText.length > 0) {
-				selectedText = (selectedText.length > 15) ?
-				               selectedText.substr(0,15) + "..." : selectedText;
+					let menuLabel = this.getMenuItemLabel(selectedText);
 
-				let menuLabel = this.getMenuItemLabel(selectedText);
-
-				this.ctxMenu.setAttribute("label", menuLabel);
-				this.ctxMenu.removeAttribute("hidden");
+					ctxMenu.setAttribute("label", menuLabel);
+					ctxMenu.removeAttribute("hidden");
+				}
+				else {
+					ctxMenu.setAttribute("hidden", "true");
+				}
 			}
 			else {
-				this.ctxMenu.setAttribute("hidden", "true");
+				ctxMenu.setAttribute("hidden", "true");
 			}
-		}
-		else {
-			this.ctxMenu.setAttribute("hidden", "true");
 		}
 	},
 
