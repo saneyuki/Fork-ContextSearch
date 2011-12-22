@@ -48,16 +48,19 @@ var ContextSearch = {
 		delete this.ctxMenu;
 		return this.ctxMenu = document.getElementById("context-searchmenu");
 	},
+	set ctxMenu (v) {},
 
 	get ctxPopup () {
 		delete this.ctxPopup;
 		return this.ctxPopup = document.getElementById("context-searchpopup");
 	},
+	set ctxPopup (v) {},
 
 	get ctxItemSearchSelect () {
 		delete this.ctxItemSearchSelect;
 		return this.ctxItemSearchSelect = document.getElementById("context-searchselect");
 	},
+	set ctxItemSearchSelect (v) {},
 
 	get hideMenuItem () {
 		delete this.hideMenuItem;
@@ -99,6 +102,11 @@ var ContextSearch = {
 		window.removeEventListener("unload", this, false);
 		document.getElementById("contentAreaContextMenu").removeEventListener("popupshowing", this, false);
 		document.getElementById("context-searchpopup").removeEventListener("command", this, false);
+
+		// Release DOM reference
+		this.ctxMenu  = null;
+		this.ctxPopup = null;
+		this.ctxItemSearchSelect = null;
 	},
 
 	onPopup: function(aEvent) {
