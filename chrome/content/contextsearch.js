@@ -61,17 +61,6 @@ var ContextSearch = {
 	},
 	set ctxPopup (v) {},
 
-	get ctxItemSearchSelect () {
-		delete this.ctxItemSearchSelect;
-		return this.ctxItemSearchSelect = document.getElementById("context-searchselect");
-	},
-	set ctxItemSearchSelect (v) {},
-
-	get hideMenuItem () {
-		delete this.hideMenuItem;
-		return this.hideMenuItem = this.prefBranch.getBoolPref("hideStandardContextItem");
-	},
-
 	get searchEnginesMap () {
 		delete this.searchEnginesMap;
 		return this.searchEnginesMap = new WeakMap();
@@ -110,6 +99,11 @@ var ContextSearch = {
 		Services.obs.addObserver(this, "browser-search-engine-modified", true);
 
 		this.rebuildmenu();
+
+		// hide default search menu.
+		if (this.prefBranch.getBoolPref("hideStandardContextItem")) {
+			document.getElementById("context-searchselect").style.display = "none";
+		}
 	},
 
 	onUnLoad: function () {
@@ -123,7 +117,6 @@ var ContextSearch = {
 		// Release DOM reference
 		this.ctxMenu  = null;
 		this.ctxPopup = null;
-		this.ctxItemSearchSelect = null;
 	},
 
 	onPopup: function(aEvent) {
@@ -142,7 +135,6 @@ var ContextSearch = {
 
 			let menuLabel = this.getMenuItemLabel(selectedText);
 
-			this.setupDefaultMenuItem();
 			this.ctxMenu.setAttribute("label", menuLabel);
 			this.ctxMenu.removeAttribute("hidden");
 		}
@@ -187,12 +179,6 @@ var ContextSearch = {
 		// format "Search <engine> for <selection>" string to show in menu
 		let menuLabel = gNavigatorBundle.getFormattedString("contextMenuSearchText", [engineName, aString]);
 		return menuLabel.replace(/\s\s/, " ");
-	},
-
-	setupDefaultMenuItem: function () {
-		if (this.hideMenuItem) {
-			this.ctxItemSearchSelect.setAttribute("hidden", "true");
-		}
 	},
 
 	rebuildmenu: function () {
