@@ -217,25 +217,22 @@ var ContextSearch = {
 	search: function (aEvent) {
 		let target = aEvent.target;
 		let enginesMap = this.searchEnginesMap;
-		if (!enginesMap.has(target)) {
-			return;
-		}
+		if (enginesMap.has(target)) {
+			let where            = this._whereToOpenLink(aEvent);
+			let selectedText     = this.getBrowserSelection(null);
+			let searchSubmission = enginesMap.get(target).getSubmission(selectedText, null);
+			let searchUrl        = searchSubmission.uri.spec;
+			let postData         = searchSubmission.postData;
 
-		let where = this._whereToOpenLink(aEvent);
-		let selectedText = this.getBrowserSelection(null);
-		let searchSubmission = enginesMap.get(target).getSubmission(selectedText, null);
-		let searchUrl = searchSubmission.uri.spec;
-		let postData = searchSubmission.postData;
-
-		if (this.isEnabledTreeStyleTab &&
-		    this.prefBranch.getBoolPref("treestyletab.searchResultAsChildren")
-		) {
-			TreeStyleTabService.readyToOpenChildTab();
-			openUILinkIn(searchUrl, where, null, postData);
-			TreeStyleTabService.stopToOpenChildTab();
-		}
-		else {
-			openUILinkIn(searchUrl, where, null, postData);
+			if (this.isEnabledTreeStyleTab &&
+			    this.prefBranch.getBoolPref("treestyletab.searchResultAsChildren") ) {
+				TreeStyleTabService.readyToOpenChildTab();
+				openUILinkIn(searchUrl, where, null, postData);
+				TreeStyleTabService.stopToOpenChildTab();
+			}
+			else {
+				openUILinkIn(searchUrl, where, null, postData);
+			}
 		}
 	},
 
