@@ -137,6 +137,9 @@ var ContextSearch = {
 				this.ctxMenu.setAttribute("label", menuLabel);
 				this.ctxMenu.removeAttribute("hidden");
 			}
+			else {
+				this.ctxMenu.setAttribute("hidden", "true");
+			}
 		}
 		else {
 			this.ctxMenu.setAttribute("hidden", "true");
