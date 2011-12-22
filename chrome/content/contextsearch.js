@@ -189,11 +189,12 @@ var ContextSearch = {
 			popup.removeChild(popup.firstChild);
 		}
 
-		for (let i = 0; i < engines.length; i++) {
-			let engine = engines[i];
+		for (let i = 0, l = engines.length; i < l; i++) {
+			let engine   = engines[i];
 			let menuitem = document.createElement("menuitem");
-			menuitem.setAttribute("id", "contextsearch-engine:" + encodeURIComponent(engine.name));
-			menuitem.setAttribute("label", engine.name);
+			let name     = engine.name;
+			menuitem.setAttribute("id", "contextsearch-engine:" + encodeURIComponent(name));
+			menuitem.setAttribute("label", name);
 			menuitem.setAttribute("class", "menuitem-iconic contextsearch-menuitem");
 
 			if (engine.iconURI) {
