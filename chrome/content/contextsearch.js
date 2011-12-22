@@ -215,13 +215,15 @@ var ContextSearch = {
 	},
 
 	search: function (aEvent) {
-		if (!aEvent.target.id) {
+		let target = aEvent.target;
+		let enginesMap = this.searchEnginesMap;
+		if (!enginesMap.has(target)) {
 			return;
 		}
 
 		let where = this._whereToOpenLink(aEvent);
 		let selectedText = this.getBrowserSelection(null);
-		let searchSubmission = this.searchEnginesMap.get(aEvent.target).getSubmission(selectedText, null);
+		let searchSubmission = enginesMap.get(target).getSubmission(selectedText, null);
 		let searchUrl = searchSubmission.uri.spec;
 		let postData = searchSubmission.postData;
 
