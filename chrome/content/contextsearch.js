@@ -156,7 +156,8 @@ var ContextSearch = {
 				let endPos = focusedElement.selectionEnd;
 
 				if (aCharCount && (aCharCount < (endPos - startPos))) {
-					endPos = startPos + ((aCharCount <= 150) ? aCharCount : 150);
+					// 150 is kMaxSelectionLen value in getBrowserSelection().
+					endPos = startPos + Math.min(aCharCount, 150);
 				}
 
 				selectedText = focusedElement.value.substring(startPos, endPos);
