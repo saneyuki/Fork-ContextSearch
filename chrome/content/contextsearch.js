@@ -124,19 +124,18 @@ var ContextSearch = {
 			return;
 		}
 
-		let selectedText = this.getBrowserSelection(16);
 		// truncate text for label and set up menu items as appropriate
-		if (gContextMenu.isTextSelected ||
-		    (gContextMenu.onTextInput && selectedText.length > 0)) {
+		if (gContextMenu.isTextSelected || gContextMenu.onTextInput) {
+			let selectedText = this.getBrowserSelection(16);
+			if (selectedText.length > 0) {
+				selectedText = (selectedText.length > 15) ?
+				               selectedText.substr(0,15) + "..." : selectedText;
 
-			if (selectedText.length > 15) {
-				selectedText = selectedText.substr(0,15) + "...";
+				let menuLabel = this.getMenuItemLabel(selectedText);
+
+				this.ctxMenu.setAttribute("label", menuLabel);
+				this.ctxMenu.removeAttribute("hidden");
 			}
-
-			let menuLabel = this.getMenuItemLabel(selectedText);
-
-			this.ctxMenu.setAttribute("label", menuLabel);
-			this.ctxMenu.removeAttribute("hidden");
 		}
 		else {
 			this.ctxMenu.setAttribute("hidden", "true");
