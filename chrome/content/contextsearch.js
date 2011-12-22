@@ -190,13 +190,8 @@ var ContextSearch = {
 	},
 
 	setupDefaultMenuItem: function () {
-		let menuItem = this.ctxItemSearchSelect;
-
-		if (!this.hideMenuItem) {
-			menuItem.removeAttribute("hidden");
-		}
-		else {
-			menuItem.setAttribute("hidden", "true");
+		if (this.hideMenuItem) {
+			this.ctxItemSearchSelect.setAttribute("hidden", "true");
 		}
 	},
 
