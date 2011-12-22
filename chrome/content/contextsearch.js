@@ -143,7 +143,7 @@ var ContextSearch = {
 	},
 
 	getBrowserSelection: function (aCharCount) {
-		let selectedText;
+		let selectedText = "";
 
 		// get text selection from input node
 		if (gContextMenu.onTextInput) {
