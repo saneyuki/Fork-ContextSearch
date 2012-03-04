@@ -213,7 +213,7 @@ var ContextSearch = {
 		switch (where) {
 			case "current":
 				let loadInBackground = Services.prefs
-				                       .getBoolPref("browser.tabs.loadInBackground");
+				                       .getBoolPref("browser.search.context.loadInBackground");
 				rv = loadInBackground ? "tabshifted" : "tab";
 				break;
 			default: 
