@@ -189,7 +189,9 @@ var ContextSearch = {
 		let target = aEvent.target;
 		let enginesMap = this.searchEnginesMap;
 		if (enginesMap.has(target)) {
-			let where            = this._whereToOpenLink(aEvent);
+			let loadInBackground = Services.prefs.
+			                       getBoolPref("browser.search.context.loadInBackground");
+			let where            = loadInBackground ? "tabshifted" : "tab";
 			let selectedText     = this.getBrowserSelection(null);
 			let searchSubmission = enginesMap.get(target).getSubmission(selectedText, null);
 			let searchUrl        = searchSubmission.uri.spec;
@@ -207,20 +209,5 @@ var ContextSearch = {
 		}
 	},
 
-	_whereToOpenLink: function (aEvent) {
-		let rv = "";
-		let where = whereToOpenLink(aEvent, false, true);
-		switch (where) {
-			case "current":
-				let loadInBackground = Services.prefs
-				                       .getBoolPref("browser.search.context.loadInBackground");
-				rv = loadInBackground ? "tabshifted" : "tab";
-				break;
-			default: 
-				rv = where;
-				break;
-		}
-		return rv;
-	},
 };
 window.addEventListener("load", ContextSearch, false);
