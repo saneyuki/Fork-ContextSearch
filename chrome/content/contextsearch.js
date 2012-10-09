@@ -93,54 +93,19 @@ var ContextSearch = {
 
 		let ctxMenu = this.ctxMenu;
 		// truncate text for label and set up menu items as appropriate
-		if (gContextMenu.isTextSelected || gContextMenu.onTextInput) {
-			let selectedText = this.getBrowserSelection(16);
-			if (selectedText.length > 0) {
-				selectedText = (selectedText.length > 15) ?
-											 selectedText.substr(0,15) + "..." : selectedText;
-
-				let menuLabel = this.getMenuItemLabel(selectedText);
-
-				ctxMenu.setAttribute("label", menuLabel);
-				ctxMenu.removeAttribute("hidden");
+		if (gContextMenu.isTextSelected) {
+			let selectedText = getBrowserSelection(16);
+			if (selectedText.length > 15) {
+				selectedText = selectedText.substr(0,15) + "...";
 			}
-			else {
-				ctxMenu.setAttribute("hidden", "true");
-			}
+
+			let menuLabel = this.getMenuItemLabel(selectedText);
+			ctxMenu.setAttribute("label", menuLabel);
+			ctxMenu.removeAttribute("hidden");
 		}
 		else {
 			ctxMenu.setAttribute("hidden", "true");
 		}
-	},
-
-	getBrowserSelection: function (aCharCount) {
-		let selectedText = "";
-
-		// get text selection from input node
-		if (gContextMenu.onTextInput) {
-			try {
-				let focusedElement = document.commandDispatcher.focusedElement;
-				let startPos = focusedElement.selectionStart;
-				let endPos = focusedElement.selectionEnd;
-
-				if (aCharCount && (aCharCount < (endPos - startPos))) {
-					// 150 is kMaxSelectionLen value in getBrowserSelection().
-					endPos = startPos + Math.min(aCharCount, 150);
-				}
-
-				selectedText = focusedElement.value.substring(startPos, endPos);
-			}
-			catch (e) {
-				selectedText = getBrowserSelection(aCharCount);
-			}
-		}
-		// if an event is passed from the menu, we can assume there's a selection
-		// otherwise check text is selected
-		else if (gContextMenu.isTextSelected) {
-			selectedText = getBrowserSelection(aCharCount);
-		}
-
-		return selectedText;
 	},
 
 	// shamelessly ripped from browser.js
@@ -148,7 +113,7 @@ var ContextSearch = {
 		let engineName = "";
 
 		// format "Search <engine> for <selection>" string to show in menu
-		let menuLabel = gNavigatorBundle.getFormattedString("contextMenuSearchText", [engineName, aString]);
+		let menuLabel = gNavigatorBundle.getFormattedString("contextMenuSearch", [engineName, aString]);
 		return menuLabel.replace(/\s\s/, " ");
 	},
 
@@ -194,7 +159,7 @@ var ContextSearch = {
 			let loadInBackground = Services.prefs.
 			                       getBoolPref("browser.search.context.loadInBackground");
 			let where            = loadInBackground ? "tabshifted" : "tab";
-			let selectedText     = this.getBrowserSelection(null);
+			let selectedText     = getBrowserSelection();
 			let searchSubmission = enginesMap.get(target).getSubmission(selectedText, null);
 			let searchUrl        = searchSubmission.uri.spec;
 			let postData         = searchSubmission.postData;
