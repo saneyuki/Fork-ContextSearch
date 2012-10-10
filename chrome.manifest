@@ -1,2 +1,2 @@
-content contextsearch    chrome/content/
+content contextsearch  content/
 overlay chrome://browser/content/browser.xul    chrome://contextsearch/content/contextsearch.xul

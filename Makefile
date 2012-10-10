@@ -3,8 +3,8 @@ OPTION  = -6
 # IGNORE  = -x .DS_Store
 PACKAGE = context-search.xpi
 FILE    = \
-  ./chrome/content/contextsearch.js \
-  ./chrome/content/contextsearch.xul \
+  ./content/contextsearch.js \
+  ./content/contextsearch.xul \
   ./defaults/preferences/contextsearch.js \
   chrome.manifest \
   install.rdf
