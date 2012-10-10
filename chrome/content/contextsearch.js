@@ -87,27 +87,29 @@ var ContextSearch = {
 	},
 
 	onPopup: function(aEvent) {
-		if (aEvent.target.id === "contentAreaContextMenu") {
-			let ctxMenu = this.ctxMenu;
-			// truncate text for label and set up menu items as appropriate
-			if (gContextMenu.isTextSelected || gContextMenu.onTextInput) {
-				let selectedText = this.getBrowserSelection(16);
-				if (selectedText.length > 0) {
-					selectedText = (selectedText.length > 15) ?
-					               selectedText.substr(0,15) + "..." : selectedText;
+		if (aEvent.target.id !== "contentAreaContextMenu") {
+			return;
+		}
 
-					let menuLabel = this.getMenuItemLabel(selectedText);
+		let ctxMenu = this.ctxMenu;
+		// truncate text for label and set up menu items as appropriate
+		if (gContextMenu.isTextSelected || gContextMenu.onTextInput) {
+			let selectedText = this.getBrowserSelection(16);
+			if (selectedText.length > 0) {
+				selectedText = (selectedText.length > 15) ?
+											 selectedText.substr(0,15) + "..." : selectedText;
 
-					ctxMenu.setAttribute("label", menuLabel);
-					ctxMenu.removeAttribute("hidden");
-				}
-				else {
-					ctxMenu.setAttribute("hidden", "true");
-				}
+				let menuLabel = this.getMenuItemLabel(selectedText);
+
+				ctxMenu.setAttribute("label", menuLabel);
+				ctxMenu.removeAttribute("hidden");
 			}
 			else {
 				ctxMenu.setAttribute("hidden", "true");
 			}
+		}
+		else {
+			ctxMenu.setAttribute("hidden", "true");
 		}
 	},
 
