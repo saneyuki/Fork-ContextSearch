@@ -2,24 +2,24 @@
 
 <RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:em="http://www.mozilla.org/2004/em-rdf#">
-	<Description about="urn:mozilla:install-manifest">
+  <Description about="urn:mozilla:install-manifest">
 
-		<em:id>contextsearch@saneyuki_s</em:id>
-		<em:version>0.4.5.1</em:version>
+    <em:id>contextsearch@saneyuki_s</em:id>
+    <em:version>0.4.5.1</em:version>
 
-		<em:targetApplication>
-			<Description>
-				<em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
-				<em:minVersion>19.0a1</em:minVersion>
-				<em:maxVersion>*</em:maxVersion>
-			</Description>
-		</em:targetApplication>
+    <em:targetApplication>
+      <Description>
+        <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
+        <em:minVersion>19.0a1</em:minVersion>
+        <em:maxVersion>*</em:maxVersion>
+      </Description>
+    </em:targetApplication>
 
-		<em:name>Context Search</em:name>
-		<em:description>Expands the context menu's 'Search for' item into a list of search engines. *Fork version.</em:description>
-		<em:creator>Ben Basson</em:creator>
-		<em:developer>saneyuki_s</em:developer>
-		<!--<em:homepageURL></em:homepageURL>-->
+    <em:name>Context Search</em:name>
+    <em:description>Expands the context menu's 'Search for' item into a list of search engines. *Fork version.</em:description>
+    <em:creator>Ben Basson</em:creator>
+    <em:developer>saneyuki_s</em:developer>
+    <!--<em:homepageURL></em:homepageURL>-->
 
-	</Description>
+  </Description>
 </RDF>

@@ -9,15 +9,15 @@
 <overlay id="contextsearch"
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-	<script type="application/javascript"
-	        src="chrome://contextsearch/content/contextsearch.js"/>
+  <script type="application/javascript"
+          src="chrome://contextsearch/content/contextsearch.js"/>
 
-	<popup id="contentAreaContextMenu">
-		<menu id="context-searchmenu"
-		      insertafter="context-searchselect"
-		      accesskey="&search.accesskey;">
-			<menupopup id="context-searchpopup"/>
-		</menu>
-	</popup>
+  <popup id="contentAreaContextMenu">
+    <menu id="context-searchmenu"
+          insertafter="context-searchselect"
+          accesskey="&search.accesskey;">
+      <menupopup id="context-searchpopup"/>
+    </menu>
+  </popup>
 
 </overlay>
