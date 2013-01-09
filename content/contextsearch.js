@@ -168,14 +168,20 @@ var ContextSearch = {
       let searchUrl        = searchSubmission.uri.spec;
       let postData         = searchSubmission.postData;
 
+      let params = {
+        fromChrome: true,
+        postData: postData,
+        relatedToCurrent: true,
+      };
+
       if (this.isEnabledTreeStyleTab &&
           this.prefBranch.getBoolPref("treestyletab.searchResultAsChildren") ) {
         TreeStyleTabService.readyToOpenChildTab();
-        openUILinkIn(searchUrl, where, null, postData);
+        openLinkIn(searchUrl, where, params);
         TreeStyleTabService.stopToOpenChildTab();
       }
       else {
-        openUILinkIn(searchUrl, where, null, postData);
+        openLinkIn(searchUrl, where, params);
       }
     }
   },
