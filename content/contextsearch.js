@@ -164,7 +164,7 @@ var ContextSearch = {
                              getBoolPref("browser.search.context.loadInBackground");
       let where            = loadInBackground ? "tabshifted" : "tab";
       let selectedText     = getBrowserSelection();
-      let searchSubmission = enginesMap.get(target).getSubmission(selectedText, null);
+      let searchSubmission = enginesMap.get(target).getSubmission(selectedText, null, "contextmenu");
       let searchUrl        = searchSubmission.uri.spec;
       let postData         = searchSubmission.postData;
 
