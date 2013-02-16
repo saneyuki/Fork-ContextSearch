@@ -167,7 +167,8 @@ var ContextSearch = {
                            getBoolPref("browser.search.context.loadInBackground");
     let where            = loadInBackground ? "tabshifted" : "tab";
     let selectedText     = getBrowserSelection();
-    let searchSubmission = enginesMap.get(target).getSubmission(selectedText, null, "contextmenu");
+    let engine           = enginesMap.get(target);
+    let searchSubmission = engine.getSubmission(selectedText, null, "contextmenu");
     // getSubmission can return null if the engine doesn't have a URL
     // with a text/html response type.
     if (!searchSubmission) {
@@ -192,6 +193,8 @@ var ContextSearch = {
     else {
       openLinkIn(searchUrl, where, params);
     }
+
+    BrowserSearch.recordSearchInHealthReport(engine.name, "contextmenu");
   },
 
 };
