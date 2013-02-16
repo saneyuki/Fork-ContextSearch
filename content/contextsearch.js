@@ -159,36 +159,38 @@ var ContextSearch = {
   search: function (aEvent) {
     let target = aEvent.target;
     let enginesMap = this.searchEnginesMap;
-    if (enginesMap.has(target)) {
-      let loadInBackground = Services.prefs.
-                             getBoolPref("browser.search.context.loadInBackground");
-      let where            = loadInBackground ? "tabshifted" : "tab";
-      let selectedText     = getBrowserSelection();
-      let searchSubmission = enginesMap.get(target).getSubmission(selectedText, null, "contextmenu");
-      // getSubmission can return null if the engine doesn't have a URL
-      // with a text/html response type.
-      if (!searchSubmission) {
-        return;
-      }
+    if (!enginesMap.has(target)) {
+      return;
+    }
 
-      let searchUrl        = searchSubmission.uri.spec;
-      let postData         = searchSubmission.postData;
+    let loadInBackground = Services.prefs.
+                           getBoolPref("browser.search.context.loadInBackground");
+    let where            = loadInBackground ? "tabshifted" : "tab";
+    let selectedText     = getBrowserSelection();
+    let searchSubmission = enginesMap.get(target).getSubmission(selectedText, null, "contextmenu");
+    // getSubmission can return null if the engine doesn't have a URL
+    // with a text/html response type.
+    if (!searchSubmission) {
+      return;
+    }
 
-      let params = {
-        fromChrome: true,
-        postData: postData,
-        relatedToCurrent: true,
-      };
+    let searchUrl = searchSubmission.uri.spec;
+    let postData = searchSubmission.postData;
 
-      if (this.isEnabledTreeStyleTab &&
-          this.prefBranch.getBoolPref("treestyletab.searchResultAsChildren") ) {
-        TreeStyleTabService.readyToOpenChildTab();
-        openLinkIn(searchUrl, where, params);
-        TreeStyleTabService.stopToOpenChildTab();
-      }
-      else {
-        openLinkIn(searchUrl, where, params);
-      }
+    let params = {
+      fromChrome: true,
+      postData: postData,
+      relatedToCurrent: true,
+    };
+
+    if (this.isEnabledTreeStyleTab &&
+        this.prefBranch.getBoolPref("treestyletab.searchResultAsChildren") ) {
+      TreeStyleTabService.readyToOpenChildTab();
+      openLinkIn(searchUrl, where, params);
+      TreeStyleTabService.stopToOpenChildTab();
+    }
+    else {
+      openLinkIn(searchUrl, where, params);
     }
   },
 
