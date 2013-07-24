@@ -14,8 +14,7 @@
 
   <popup id="contentAreaContextMenu">
     <menu id="context-searchmenu"
-          insertafter="context-searchselect"
-          accesskey="&search.accesskey;">
+          insertafter="context-searchselect">
       <menupopup id="context-searchpopup"/>
     </menu>
   </popup>

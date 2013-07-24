@@ -71,6 +71,9 @@ var ContextSearch = {
 
     this.rebuildmenu();
 
+    let accesskey = gNavigatorBundle.getString("contextMenuSearch.accesskey");
+    this.ctxMenu.setAttribute("accesskey", accesskey);
+
     // hide default search menu.
     if (this.prefBranch.getBoolPref("hideStandardContextItem")) {
       document.getElementById("context-searchselect").style.display = "none";
