@@ -4,15 +4,15 @@
 
 "use strict";
 
-Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
-Components.utils.import("resource://gre/modules/Services.jsm");
+Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+Cu.import("resource://gre/modules/Services.jsm");
 
 var ContextSearch = {
 
-  QueryInterface: XPCOMUtils.generateQI([Components.interfaces.nsIObserver,
-                                         Components.interfaces.nsIDOMEventListener,
-                                         Components.interfaces.nsISupportsWeakReference,
-                                         Components.interfaces.nsISupports]),
+  QueryInterface: XPCOMUtils.generateQI([Ci.nsIObserver,
+                                         Ci.nsIDOMEventListener,
+                                         Ci.nsISupportsWeakReference,
+                                         Ci.nsISupports]),
 
   PREF_BRANCH_NAME: "extensions.contextsearch.",
 
