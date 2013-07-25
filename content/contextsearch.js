@@ -15,27 +15,6 @@ var ContextSearch = {
                                          Components.interfaces.nsISupports]),
 
   PREF_BRANCH_NAME: "extensions.contextsearch.",
-  get prefBranch () {
-    delete this.prefBranch;
-    return this.prefBranch = Services.prefs.getBranch(this.PREF_BRANCH_NAME);
-  },
-
-  get ctxMenu () {
-    delete this.ctxMenu;
-    return this.ctxMenu = document.getElementById("context-searchmenu");
-  },
-  set ctxMenu (v) {},
-
-  get ctxPopup () {
-    delete this.ctxPopup;
-    return this.ctxPopup = document.getElementById("context-searchpopup");
-  },
-  set ctxPopup (v) {},
-
-  get searchEnginesMap () {
-    delete this.searchEnginesMap;
-    return this.searchEnginesMap = new WeakMap();
-  },
 
   observe: function (aSubject, aTopic, aData) {
     if (aTopic == "browser-search-engine-modified") {
@@ -62,10 +41,17 @@ var ContextSearch = {
 
   onLoad: function () {
     window.removeEventListener("load", this, false);
-
     window.addEventListener("unload", this, false);
+
+    this.searchEnginesMap = new WeakMap();
+    this._isEnabledTreeStyleTab = ("TreeStyleTabService" in window) ? true : false;
+    this.prefBranch = Services.prefs.getBranch(this.PREF_BRANCH_NAME);
+
+    this.ctxPopup = document.getElementById("context-searchpopup");
+    this.ctxMenu = document.getElementById("context-searchmenu");
+
     document.getElementById("contentAreaContextMenu").addEventListener("popupshowing", this, false);
-    document.getElementById("context-searchpopup").addEventListener("command", this, false);
+    this.ctxPopup.addEventListener("command", this, false);
 
     Services.obs.addObserver(this, "browser-search-engine-modified", true);
 
@@ -84,7 +70,7 @@ var ContextSearch = {
     window.removeEventListener("unload", this, false);
 
     document.getElementById("contentAreaContextMenu").removeEventListener("popupshowing", this, false);
-    document.getElementById("context-searchpopup").removeEventListener("command", this, false);
+    this.ctxPopup.removeEventListener("command", this, false);
 
     Services.obs.removeObserver(this, "browser-search-engine-modified");
 
@@ -154,11 +140,6 @@ var ContextSearch = {
     this.search(aEvent);
   },
 
-  get isEnabledTreeStyleTab () {
-    delete this.isEnabledTreeStyleTab;
-    return this.isEnabledTreeStyleTab = ("TreeStyleTabService" in window) ? true : false;
-  },
-
   search: function (aEvent) {
     let target = aEvent.target;
     let enginesMap = this.searchEnginesMap;
@@ -187,7 +168,7 @@ var ContextSearch = {
       relatedToCurrent: true,
     };
 
-    if (this.isEnabledTreeStyleTab &&
+    if (this._isEnabledTreeStyleTab &&
         this.prefBranch.getBoolPref("treestyletab.searchResultAsChildren") ) {
       TreeStyleTabService.readyToOpenChildTab();
       openLinkIn(searchUrl, where, params);
