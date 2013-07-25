@@ -17,7 +17,7 @@ var ContextSearch = {
   PREF_BRANCH_NAME: "extensions.contextsearch.",
 
   observe: function (aSubject, aTopic, aData) {
-    if (aTopic == "browser-search-engine-modified") {
+    if (aTopic === "browser-search-engine-modified") {
       this.rebuildmenu();
     }
   },
