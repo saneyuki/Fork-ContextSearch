@@ -87,7 +87,7 @@ var ContextSearch = {
     let ctxMenu = this.ctxMenu;
     // truncate text for label and set up menu items as appropriate
     if (gContextMenu.isTextSelected) {
-      let selectedText = getBrowserSelection(16);
+      let selectedText = gContextMenu.textSelected;
       if (selectedText.length > 15) {
         selectedText = selectedText.substr(0,15) + "...";
       }
@@ -150,7 +150,8 @@ var ContextSearch = {
     let loadInBackground = Services.prefs.
                            getBoolPref("browser.search.context.loadInBackground");
     let where            = loadInBackground ? "tabshifted" : "tab";
-    let selectedText     = getBrowserSelection();
+    let selectedText     = gContextMenu.onLink ?
+                           gContextMenu.linkText() : gContextMenu.textSelected;
     let engine           = enginesMap.get(target);
     let searchSubmission = engine.getSubmission(selectedText, null, "contextmenu");
     // getSubmission can return null if the engine doesn't have a URL
