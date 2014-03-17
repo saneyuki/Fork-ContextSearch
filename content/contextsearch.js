@@ -150,8 +150,7 @@ var ContextSearch = {
     let loadInBackground = Services.prefs.
                            getBoolPref("browser.search.context.loadInBackground");
     let where            = loadInBackground ? "tabshifted" : "tab";
-    let selectedText     = gContextMenu.onLink ?
-                           gContextMenu.linkText() : gContextMenu.textSelected;
+    let selectedText     = gContextMenu.textSelected;
     let engine           = enginesMap.get(target);
     let searchSubmission = engine.getSubmission(selectedText, null, "contextmenu");
     // getSubmission can return null if the engine doesn't have a URL
