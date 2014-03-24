@@ -15,12 +15,15 @@ const PREF_BRANCH_NAME = "extensions.contextsearch.";
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 
+XPCOMUtils.defineLazyGetter(this, "gPrefBranch", function () {
+  return Services.prefs.getBranch(PREF_BRANCH_NAME);
+});
+
 function ContextSearch(aWindow) {
   this.window = aWindow;
 
   this.searchEnginesMap = new WeakMap();
   this._isEnabledTreeStyleTab = false;
-  this.prefBranch = Services.prefs.getBranch(PREF_BRANCH_NAME);
   this.ctxPopup = null;
   this.ctxMenu = null;
 
@@ -91,7 +94,7 @@ ContextSearch.prototype = {
     ctxMenu.addEventListener("popupshowing", this, false);
 
     // hide default search menu.
-    if (this.prefBranch.getBoolPref("hideStandardContextItem")) {
+    if (gPrefBranch.getBoolPref("hideStandardContextItem")) {
       insertionPoint.style.display = "none";
     }
 
@@ -179,6 +182,7 @@ ContextSearch.prototype = {
   },
 
   search: function (aEvent) {
+    let window = this.window;
     let target = aEvent.target;
     let enginesMap = this.searchEnginesMap;
     if (!enginesMap.has(target)) {
@@ -188,7 +192,7 @@ ContextSearch.prototype = {
     let loadInBackground = Services.prefs.
                            getBoolPref("browser.search.context.loadInBackground");
     let where            = loadInBackground ? "tabshifted" : "tab";
-    let selectedText     = this.window.gContextMenu.textSelected;
+    let selectedText     = window.gContextMenu.textSelected;
     let engine           = enginesMap.get(target);
     let searchSubmission = engine.getSubmission(selectedText, null, "contextmenu");
 
@@ -207,10 +211,10 @@ ContextSearch.prototype = {
       relatedToCurrent: true,
     };
 
-    let openLinkIn = this.window.openLinkIn;
+    let openLinkIn = window.openLinkIn;
     if (this._isEnabledTreeStyleTab &&
-        this.prefBranch.getBoolPref("treestyletab.searchResultAsChildren") ) {
-      let TreeStyleTabService = this.window.TreeStyleTabService;
+        gPrefBranch.getBoolPref("treestyletab.searchResultAsChildren") ) {
+      let TreeStyleTabService = window.TreeStyleTabService;
       TreeStyleTabService.readyToOpenChildTab();
       openLinkIn(searchUrl, where, params);
       TreeStyleTabService.stopToOpenChildTab();
@@ -219,7 +223,7 @@ ContextSearch.prototype = {
       openLinkIn(searchUrl, where, params);
     }
 
-    this.window.BrowserSearch.recordSearchInHealthReport(engine.name, "contextmenu");
+    window.BrowserSearch.recordSearchInHealthReport(engine.name, "contextmenu");
   },
 
 };
