@@ -12,11 +12,4 @@
   <script type="application/javascript"
           src="chrome://contextsearch/content/contextsearch.js"/>
 
-  <popup id="contentAreaContextMenu">
-    <menu id="context-searchmenu"
-          insertafter="context-searchselect">
-      <menupopup id="context-searchpopup"/>
-    </menu>
-  </popup>
-
 </overlay>

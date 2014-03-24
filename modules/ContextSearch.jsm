@@ -36,7 +36,7 @@ ContextSearch.prototype = {
 
   observe: function (aSubject, aTopic, aData) {
     if (aTopic === "browser-search-engine-modified") {
-      this.rebuildmenu();
+      this.rebuildEngineMenu(this.ctxPopup);
     }
   },
 
@@ -66,21 +66,36 @@ ContextSearch.prototype = {
 
     this._isEnabledTreeStyleTab = ("TreeStyleTabService" in window) ? true : false;
 
-    this.ctxPopup = document.getElementById("context-searchpopup");
-    this.ctxMenu = document.getElementById("context-searchmenu");
+    [this.ctxPopup, this.ctxMenu] = this.createMenu();
+  },
 
-    document.getElementById("contentAreaContextMenu").addEventListener("popupshowing", this, false);
-    this.ctxPopup.addEventListener("command", this, false);
+  createMenu: function () {
+    let window = this.window;
+    let document = window.document;
 
-    this.rebuildmenu();
+    let popup = document.createElement("menupopup");
+    popup.setAttribute("id", "context-searchpopup");
+    popup.addEventListener("command", this, false);
+    this.rebuildEngineMenu(popup);
 
+    let menu = document.createElement("menu");
+    menu.setAttribute("id", "context-searchmenu");
     let accesskey = window.gNavigatorBundle.getString("contextMenuSearch.accesskey");
-    this.ctxMenu.setAttribute("accesskey", accesskey);
+    menu.setAttribute("accesskey", accesskey);
+
+    menu.appendChild(popup);
+
+    let ctxMenu = document.getElementById("contentAreaContextMenu");
+    let insertionPoint = document.getElementById("context-searchselect");
+    ctxMenu.insertBefore(menu, insertionPoint.nextSibling);
+    ctxMenu.addEventListener("popupshowing", this, false);
 
     // hide default search menu.
     if (this.prefBranch.getBoolPref("hideStandardContextItem")) {
-      document.getElementById("context-searchselect").style.display = "none";
+      insertionPoint.style.display = "none";
     }
+
+    return [popup, menu];
   },
 
   onUnLoad: function () {
@@ -131,16 +146,16 @@ ContextSearch.prototype = {
     return menuLabel.replace(/\s\s/, " ");
   },
 
-  rebuildmenu: function () {
-    let popup = this.ctxPopup;
+  rebuildEngineMenu: function (aPopup) {
     let engines = Services.search.getVisibleEngines({});
     let document = this.window.document;
 
     // clear menu
     let range = document.createRange();
-    range.selectNodeContents(popup);
+    range.selectNodeContents(aPopup);
     range.deleteContents();
 
+    let fragment = document.createDocumentFragment();
     for (let i = 0, l = engines.length; i < l; i++) {
       let engine   = engines[i];
       let menuitem = document.createElement("menuitem");
@@ -154,8 +169,9 @@ ContextSearch.prototype = {
       }
 
       this.searchEnginesMap.set(menuitem, engine);
-      popup.appendChild(menuitem);
+      fragment.appendChild(menuitem);
     }
+    aPopup.appendChild(fragment);
   },
 
   onCommand: function (aEvent) {
