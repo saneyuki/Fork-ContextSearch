@@ -134,13 +134,13 @@ ContextSearch.prototype = {
   rebuildmenu: function () {
     let popup = this.ctxPopup;
     let engines = Services.search.getVisibleEngines({});
+    let document = this.window.document;
 
     // clear menu
-    while (popup.firstChild) {
-      popup.removeChild(popup.firstChild);
-    }
+    let range = document.createRange();
+    range.selectNodeContents(popup);
+    range.deleteContents();
 
-    let document = this.window.document;
     for (let i = 0, l = engines.length; i < l; i++) {
       let engine   = engines[i];
       let menuitem = document.createElement("menuitem");
