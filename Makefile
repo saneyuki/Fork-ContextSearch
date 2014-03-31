@@ -8,10 +8,14 @@ FILE    = \
   ./content/contextsearch.xul \
   ./defaults/preferences/contextsearch.js \
   chrome.manifest \
+  bootstrap.js \
   install.rdf
 
 
-all:  $(PACKAGE)
+all: clean xpi
 
-$(PACKAGE):  $(FILES)
+xpi: $(FILES)
 	$(ZIP) $(OPTION) $(PACKAGE) $(FILE)
+
+clean:
+	-rm -rf $(PACKAGE)
