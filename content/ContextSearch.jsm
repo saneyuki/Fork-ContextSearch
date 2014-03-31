@@ -10,11 +10,8 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-const PREF_BRANCH_NAME = "extensions.contextsearch.";
-
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource://gre/modules/Promise.jsm");
 
 function ContextSearch(aWindow) {
   this.window = aWindow;
@@ -25,7 +22,7 @@ function ContextSearch(aWindow) {
   this.ctxMenu = null;
 
   Services.obs.addObserver(this, "browser-search-engine-modified", true);
-  aWindow.addEventListener("load", this, false);
+  this.onLoad();
 }
 ContextSearch.prototype = {
 
@@ -42,9 +39,6 @@ ContextSearch.prototype = {
 
   handleEvent: function (aEvent) {
     switch (aEvent.type) {
-      case "load":
-        this.onLoad();
-        break;
       case "popupshowing":
         this.onPopup(aEvent);
         break;
@@ -61,7 +55,6 @@ ContextSearch.prototype = {
     let window = this.window;
     let document = window.document;
 
-    window.removeEventListener("load", this, false);
     window.addEventListener("unload", this, false);
 
     this._isEnabledTreeStyleTab = ("TreeStyleTabService" in window) ? true : false;
@@ -109,9 +102,16 @@ ContextSearch.prototype = {
 
     Services.obs.removeObserver(this, "browser-search-engine-modified");
 
+    // restore hidden default search menu.
+    document.getElementById("context-searchselect").style.display = "";
+
+    this.ctxMenu.removeChild(this.ctxPopup);
+    this.ctxMenu.parentNode.removeChild(this.ctxMenu);
+
     // Release DOM reference
-    this.ctxMenu  = null;
     this.ctxPopup = null;
+    this.ctxMenu  = null;
+    this.window = null;
   },
 
   onPopup: function(aEvent) {

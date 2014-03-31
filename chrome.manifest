@@ -1,4 +1,1 @@
-content   contextsearch   content/
-resource  contextsearch   modules/
-
-overlay chrome://browser/content/browser.xul    chrome://contextsearch/content/contextsearch.xul
+content  contextsearch   content/

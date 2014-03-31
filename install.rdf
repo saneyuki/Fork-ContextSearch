@@ -6,6 +6,8 @@
 
     <em:id>contextsearch@saneyuki_s</em:id>
     <em:version>0.4.5.1</em:version>
+    <em:type>2</em:type>
+    <em:bootstrap>true</em:bootstrap>
 
     <em:targetApplication>
       <Description>
