@@ -16,10 +16,6 @@ Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/Promise.jsm");
 
-XPCOMUtils.defineLazyGetter(this, "gPrefBranch", function () {
-  return Services.prefs.getBranch(PREF_BRANCH_NAME);
-});
-
 function ContextSearch(aWindow) {
   this.window = aWindow;
 
@@ -213,8 +209,7 @@ ContextSearch.prototype = {
     };
 
     let openLinkIn = window.openLinkIn;
-    if (this._isEnabledTreeStyleTab &&
-        gPrefBranch.getBoolPref("treestyletab.searchResultAsChildren") ) {
+    if (this._isEnabledTreeStyleTab) {
       let TreeStyleTabService = window.TreeStyleTabService;
       TreeStyleTabService.readyToOpenChildTab();
       openLinkIn(searchUrl, where, params);
