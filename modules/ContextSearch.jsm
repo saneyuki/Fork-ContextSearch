@@ -14,6 +14,7 @@ const PREF_BRANCH_NAME = "extensions.contextsearch.";
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
+Cu.import("resource://gre/modules/Promise.jsm");
 
 XPCOMUtils.defineLazyGetter(this, "gPrefBranch", function () {
   return Services.prefs.getBranch(PREF_BRANCH_NAME);
@@ -69,7 +70,9 @@ ContextSearch.prototype = {
 
     this._isEnabledTreeStyleTab = ("TreeStyleTabService" in window) ? true : false;
 
-    [this.ctxPopup, this.ctxMenu] = this.createMenu();
+    initSearchService(() => {
+      [this.ctxPopup, this.ctxMenu] = this.createMenu();
+    });
   },
 
   createMenu: function () {
@@ -226,4 +229,13 @@ ContextSearch.prototype = {
     window.BrowserSearch.recordSearchInHealthReport(engine.name, "contextmenu");
   },
 
+};
+
+
+function initSearchService (aCallback) {
+  Services.search.init({
+    onInitComplete: function () {
+      aCallback();
+    }
+  });
 };
