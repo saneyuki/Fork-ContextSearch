@@ -21,8 +21,7 @@ function ContextSearch(aWindow) {
   this.ctxPopup = null;
   this.ctxMenu = null;
 
-  Services.obs.addObserver(this, "browser-search-engine-modified", true);
-  this.onLoad();
+  this.initialize();
 }
 ContextSearch.prototype = {
 
@@ -51,12 +50,14 @@ ContextSearch.prototype = {
     }
   },
 
-  onLoad: function () {
+  initialize: function () {
     let window = this.window;
     let document = window.document;
 
+
     window.addEventListener("unload", this, false);
 
+    Services.obs.addObserver(this, "browser-search-engine-modified", true);
     this._isEnabledTreeStyleTab = ("TreeStyleTabService" in window) ? true : false;
 
     initSearchService(() => {
@@ -91,7 +92,7 @@ ContextSearch.prototype = {
     return [popup, menu];
   },
 
-  onUnLoad: function () {
+  finalize: function () {
     let window = this.window;
     let document = window.document;
 
@@ -112,6 +113,10 @@ ContextSearch.prototype = {
     this.ctxPopup = null;
     this.ctxMenu  = null;
     this.window = null;
+  },
+
+  onUnLoad: function () {
+    this.finalize();
   },
 
   onPopup: function(aEvent) {

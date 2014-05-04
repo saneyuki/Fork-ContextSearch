@@ -91,8 +91,8 @@ let SetupHelper = {
   },
 
   teardown: function (aDomWindow) {
-    if (!!aDomWindow.ContextSearch.onUnLoad) {
-      aDomWindow.ContextSearch.onUnLoad();
+    if (!!aDomWindow.ContextSearch) {
+      aDomWindow.ContextSearch.finalize();
       delete aDomWindow.ContextSearch;
     }
   },
