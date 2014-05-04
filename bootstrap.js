@@ -18,12 +18,14 @@ var ADDON_DOWNGRADE = 8;
 
 Cu.import("resource://gre/modules/Services.jsm");
 
+var gObjectMap = null;
 
 /*
  * bootstrapped addon interfaces
  */
 function startup(aData, aReason) {
   Cu.import("chrome://contextsearch/content/ContextSearch.jsm");
+  gObjectMap = new WeakMap();
 
   let windows = Services.wm.getEnumerator("navigator:browser");
   while (windows.hasMoreElements()) {
@@ -47,6 +49,9 @@ function shutdown(aData, aReason) {
     let domWindow = windows.getNext().QueryInterface(Ci.nsIDOMWindow);
     SetupHelper.teardown(domWindow);
   }
+
+  gObjectMap.clear();
+  gObjectMap = null;
 
   Cu.unload("chrome://contextsearch/content/ContextSearch.jsm");
 }
@@ -87,13 +92,14 @@ let SetupHelper = {
       return;
     }
 
-    aDomWindow.ContextSearch = new ContextSearch(aDomWindow);
+    let contextsearch = new ContextSearch(aDomWindow);
+    gObjectMap.set(aDomWindow, contextsearch);
   },
 
   teardown: function (aDomWindow) {
-    if (!!aDomWindow.ContextSearch) {
-      aDomWindow.ContextSearch.finalize();
-      delete aDomWindow.ContextSearch;
+    let contextsearch = gObjectMap.get(aDomWindow);
+    if (!!contextsearch) {
+      contextsearch.finalize();
     }
   },
 
