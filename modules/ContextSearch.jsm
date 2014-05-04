@@ -97,9 +97,7 @@ ContextSearch.prototype = {
     ctxMenu.addEventListener("popupshowing", this, false);
 
     // hide default search menu.
-    if (gPrefBranch.getBoolPref("hideStandardContextItem")) {
-      insertionPoint.style.display = "none";
-    }
+    insertionPoint.style.display = "none";
 
     return [popup, menu];
   },
