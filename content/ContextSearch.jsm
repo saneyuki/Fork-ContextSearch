@@ -13,6 +13,8 @@ const Cu = Components.utils;
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 
+
+
 function ContextSearch(aWindow) {
   this.window = aWindow;
 
@@ -21,9 +23,11 @@ function ContextSearch(aWindow) {
   this.ctxPopup = null;
   this.ctxMenu = null;
 
+  Object.seal(this);
+
   this.initialize();
 }
-ContextSearch.prototype = {
+ContextSearch.prototype = Object.freeze({
 
   QueryInterface: XPCOMUtils.generateQI([Ci.nsIObserver,
                                          Ci.nsIDOMEventListener,
@@ -227,7 +231,7 @@ ContextSearch.prototype = {
     window.BrowserSearch.recordSearchInHealthReport(engine.name, "contextmenu");
   },
 
-};
+});
 
 
 function initSearchService (aCallback) {
