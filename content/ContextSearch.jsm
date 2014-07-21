@@ -20,6 +20,7 @@ function ContextSearch(aWindow) {
 
   this.searchEnginesMap = new WeakMap();
   this._isEnabledTreeStyleTab = false;
+  this._searchTerm = "";
   this.ctxPopup = null;
   this.ctxMenu = null;
 
@@ -131,8 +132,10 @@ ContextSearch.prototype = Object.freeze({
     let ctxMenu = this.ctxMenu;
     let gContextMenu = this.window.gContextMenu;
     // truncate text for label and set up menu items as appropriate
-    if (gContextMenu.isTextSelected) {
-      let selectedText = gContextMenu.textSelected;
+    let showSearchSelect = (gContextMenu.isTextSelected || gContextMenu.onLink) && !gContextMenu.onImage;
+    if (showSearchSelect) {
+      let selectedText = gContextMenu.onLink ? gContextMenu.linkText() : gContextMenu.textSelected;
+      this._searchTerm = selectedText;
       if (selectedText.length > 15) {
         selectedText = selectedText.substr(0,15) + "...";
       }
@@ -198,7 +201,7 @@ ContextSearch.prototype = Object.freeze({
     let loadInBackground = Services.prefs.
                            getBoolPref("browser.search.context.loadInBackground");
     let where            = loadInBackground ? "tabshifted" : "tab";
-    let selectedText     = window.gContextMenu.textSelected;
+    let selectedText     = this._searchTerm;
     let engine           = enginesMap.get(target);
     let searchSubmission = engine.getSubmission(selectedText, null, "contextmenu");
 
