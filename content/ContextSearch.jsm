@@ -132,9 +132,13 @@ ContextSearch.prototype = Object.freeze({
     let ctxMenu = this.ctxMenu;
     let gContextMenu = this.window.gContextMenu;
     // truncate text for label and set up menu items as appropriate
-    let showSearchSelect = (gContextMenu.isTextSelected || gContextMenu.onLink) && !gContextMenu.onImage;
+    let isTextSelected = gContextMenu.isTextSelected;
+    let showSearchSelect = (isTextSelected || gContextMenu.onLink) && !gContextMenu.onImage;
     if (showSearchSelect) {
-      let selectedText = gContextMenu.onLink ? gContextMenu.linkText() : gContextMenu.textSelected;
+      let selectedText = isTextSelected ?
+                            gContextMenu.textSelected :
+                            gContextMenu.linkText(); // in the case of gContextMenu.onLink
+
       this._searchTerm = selectedText;
       if (selectedText.length > 15) {
         selectedText = selectedText.substr(0,15) + "...";
