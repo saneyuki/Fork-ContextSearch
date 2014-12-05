@@ -50,7 +50,6 @@ function shutdown(aData, aReason) {
     SetupHelper.teardown(domWindow);
   }
 
-  gObjectMap.clear();
   gObjectMap = null;
 
   Cu.unload("chrome://contextsearch/content/ContextSearch.jsm");
