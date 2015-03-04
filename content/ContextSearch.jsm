@@ -36,7 +36,9 @@ ContextSearch.prototype = Object.freeze({
                                          Ci.nsISupports]),
 
   observe: function (aSubject, aTopic, aData) {
-    if (aTopic === "browser-search-engine-modified" && !!this.ctxMenu) {
+    if (aTopic === "browser-search-engine-modified" &&
+        this.ctxMenu !== null &&
+        this.ctxPopup !== null) {
       this.rebuildEngineMenu(this.ctxPopup);
     }
   },
