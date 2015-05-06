@@ -139,7 +139,7 @@ ContextSearch.prototype = Object.freeze({
     if (showSearchSelect) {
       let selectedText = isTextSelected ?
                             gContextMenu.textSelected :
-                            gContextMenu.linkText; // in the case of gContextMenu.onLink
+                            gContextMenu.linkTextStr; // in the case of gContextMenu.onLink
 
       this._searchTerm = selectedText;
       if (selectedText.length > 15) {
