@@ -4,38 +4,46 @@
 
 "use strict";
 
-var { classes: Cc, interfaces: Ci, utils: Cu } = Components;
+const { classes: Cc, interfaces: Ci, utils: Cu } = Components;
 
 // Bootstrap Addon Reason Constants:
-var APP_STARTUP     = 1;
-var APP_SHUTDOWN    = 2;
-var ADDON_ENABLE    = 3;
-var ADDON_DISABLE   = 4;
-var ADDON_INSTALL   = 5;
-var ADDON_UNINSTALL = 6;
-var ADDON_UPGRADE   = 7;
-var ADDON_DOWNGRADE = 8;
+const APP_STARTUP     = 1;
+const APP_SHUTDOWN    = 2;
+const ADDON_ENABLE    = 3;
+const ADDON_DISABLE   = 4;
+const ADDON_INSTALL   = 5;
+const ADDON_UNINSTALL = 6;
+const ADDON_UPGRADE   = 7;
+const ADDON_DOWNGRADE = 8;
 
 Cu.import("resource://gre/modules/Services.jsm");
 
-var gObjectMap = null;
+/** @type   {WeakMap<Window, ContextSearch>} */
+let gObjectMap = null;
 
-/*
+/**
  * bootstrapped addon interfaces
+ *
+ * @param   {?}         aData
+ * @param   {number}    aReason
  */
 function startup(aData, aReason) {
   Cu.import("chrome://contextsearch/content/ContextSearch.jsm");
   gObjectMap = new WeakMap();
 
-  let windows = Services.wm.getEnumerator("navigator:browser");
+  const windows = Services.wm.getEnumerator("navigator:browser");
   while (windows.hasMoreElements()) {
-    let domWindow = windows.getNext().QueryInterface(Ci.nsIDOMWindow);
+    const domWindow = windows.getNext().QueryInterface(Ci.nsIDOMWindow);
     SetupHelper.setup(domWindow);
   }
 
   Services.wm.addListener(WindowListener);
 }
 
+/**
+ * @param   {?}         aData
+ * @param   {number}    aReason
+ */
 function shutdown(aData, aReason) {
   Services.wm.removeListener(WindowListener);
 
@@ -44,9 +52,9 @@ function shutdown(aData, aReason) {
     return;
   }
 
-  let windows = Services.wm.getEnumerator("navigator:browser");
+  const windows = Services.wm.getEnumerator("navigator:browser");
   while (windows.hasMoreElements()) {
-    let domWindow = windows.getNext().QueryInterface(Ci.nsIDOMWindow);
+    const domWindow = windows.getNext().QueryInterface(Ci.nsIDOMWindow);
     SetupHelper.teardown(domWindow);
   }
 
@@ -55,17 +63,28 @@ function shutdown(aData, aReason) {
   Cu.unload("chrome://contextsearch/content/ContextSearch.jsm");
 }
 
+/**
+ * @param   {?}         aData
+ * @param   {number}    aReason
+ */
 function install(aData, aReason) {
 }
 
+/**
+ * @param   {?}         aData
+ * @param   {number}    aReason
+ */
 function uninstall(aData, aReason) {
 }
 
 // nsIWindowMediatorListener
-let WindowListener = {
+const WindowListener = {
 
+  /**
+   * @param {Window} aXulWindow
+   */
   onOpenWindow : function (aXulWindow) {
-    let domWindow = aXulWindow.QueryInterface(Ci.nsIInterfaceRequestor)
+    const domWindow = aXulWindow.QueryInterface(Ci.nsIInterfaceRequestor)
                     .getInterface(Ci.nsIDOMWindow);
 
     // Wait finish loading
@@ -81,22 +100,28 @@ let WindowListener = {
   onWindowTitleChange : function (aWindow, aNewTitle) {}
 };
 
-let SetupHelper = {
+const SetupHelper = {
 
+  /**
+   * @param {Window} aDomWindow
+   */
   setup: function (aDomWindow) {
-    let windowType = aDomWindow.document.
+    const windowType = aDomWindow.document.
                      documentElement.getAttribute("windowtype");
     // If this isn't a browser window then abort setup.
     if (windowType !== "navigator:browser") {
       return;
     }
 
-    let contextsearch = new ContextSearch(aDomWindow);
+    const contextsearch = new ContextSearch(aDomWindow);
     gObjectMap.set(aDomWindow, contextsearch);
   },
 
+  /**
+   * @param {Window} aDomWindow
+   */
   teardown: function (aDomWindow) {
-    let contextsearch = gObjectMap.get(aDomWindow);
+    const contextsearch = gObjectMap.get(aDomWindow);
     if (!!contextsearch) {
       contextsearch.finalize();
     }

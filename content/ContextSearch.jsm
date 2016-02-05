@@ -4,7 +4,7 @@
 
 "use strict";
 
-let EXPORTED_SYMBOLS = ["ContextSearch"];
+const EXPORTED_SYMBOLS = ["ContextSearch"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -14,14 +14,23 @@ Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 
 
-
+/**
+ *  @constructor
+ *  @param    {Window}  aWindow
+ */
 function ContextSearch(aWindow) {
+  /**  @type    {Window} */
   this.window = aWindow;
 
+  /**  @type    {WeakMap<K, V>} */
   this.searchEnginesMap = new WeakMap();
+  /**  @type    {boolean} */
   this._isEnabledTreeStyleTab = false;
+  /**  @type    {string} */
   this._searchTerm = "";
+  /**  @type    {Element} */
   this.ctxPopup = null;
+  /**  @type    {Element} */
   this.ctxMenu = null;
 
   Object.seal(this);
@@ -35,6 +44,12 @@ ContextSearch.prototype = Object.freeze({
                                          Ci.nsISupportsWeakReference,
                                          Ci.nsISupports]),
 
+  /**
+   *  @param    {nsISupports}   aSubject
+   *  @param    {string}        aTopic
+   *  @param    {wstring}   	aData
+   *  @returns  {void} 
+   */
   observe: function (aSubject, aTopic, aData) {
     if (aTopic === "browser-search-engine-modified" &&
         this.ctxMenu !== null &&
@@ -43,6 +58,10 @@ ContextSearch.prototype = Object.freeze({
     }
   },
 
+  /**
+   *  @param    {Event} aEvent
+   *  @returns  {void} 
+   */
   handleEvent: function (aEvent) {
     switch (aEvent.type) {
       case "popupshowing":
@@ -57,9 +76,12 @@ ContextSearch.prototype = Object.freeze({
     }
   },
 
+  /**
+   *  @returns  {void} 
+   */
   initialize: function () {
-    let window = this.window;
-    let document = window.document;
+    const window = this.window;
+    const document = window.document;
 
 
     window.addEventListener("unload", this, false);
@@ -72,24 +94,27 @@ ContextSearch.prototype = Object.freeze({
     });
   },
 
+  /**
+   *  @returns  {[Element, Element]} 
+   */
   createMenu: function () {
-    let window = this.window;
-    let document = window.document;
+    const window = this.window;
+    const document = window.document;
 
-    let popup = document.createElement("menupopup");
+    const popup = document.createElement("menupopup");
     popup.setAttribute("id", "context-searchpopup");
     popup.addEventListener("command", this, false);
     this.rebuildEngineMenu(popup);
 
-    let menu = document.createElement("menu");
+    const menu = document.createElement("menu");
     menu.setAttribute("id", "context-searchmenu");
-    let accesskey = window.gNavigatorBundle.getString("contextMenuSearch.accesskey");
+    const accesskey = window.gNavigatorBundle.getString("contextMenuSearch.accesskey");
     menu.setAttribute("accesskey", accesskey);
 
     menu.appendChild(popup);
 
-    let ctxMenu = document.getElementById("contentAreaContextMenu");
-    let insertionPoint = document.getElementById("context-searchselect");
+    const ctxMenu = document.getElementById("contentAreaContextMenu");
+    const insertionPoint = document.getElementById("context-searchselect");
     ctxMenu.insertBefore(menu, insertionPoint.nextSibling);
     ctxMenu.addEventListener("popupshowing", this, false);
 
@@ -99,9 +124,12 @@ ContextSearch.prototype = Object.freeze({
     return [popup, menu];
   },
 
+  /**
+   *  @returns  {void}  
+   */
   finalize: function () {
-    let window = this.window;
-    let document = window.document;
+    const window = this.window;
+    const document = window.document;
 
     window.removeEventListener("unload", this, false);
 
@@ -122,20 +150,27 @@ ContextSearch.prototype = Object.freeze({
     this.window = null;
   },
 
+  /**
+   *  @returns  {void}  
+   */
   onUnLoad: function () {
     this.finalize();
   },
 
+  /**
+   *  @param    {Event} aEvent
+   *  @returns  {void}  
+   */
   onPopup: function(aEvent) {
     if (aEvent.target.id !== "contentAreaContextMenu") {
       return;
     }
 
-    let ctxMenu = this.ctxMenu;
-    let gContextMenu = this.window.gContextMenu;
+    const ctxMenu = this.ctxMenu;
+    const gContextMenu = this.window.gContextMenu;
     // truncate text for label and set up menu items as appropriate
-    let isTextSelected = gContextMenu.isTextSelected;
-    let showSearchSelect = (isTextSelected || gContextMenu.onLink) && !gContextMenu.onImage;
+    const isTextSelected = gContextMenu.isTextSelected;
+    const showSearchSelect = (isTextSelected || gContextMenu.onLink) && !gContextMenu.onImage;
     if (showSearchSelect) {
       let selectedText = isTextSelected ?
                             gContextMenu.textSelected :
@@ -146,7 +181,7 @@ ContextSearch.prototype = Object.freeze({
         selectedText = selectedText.substr(0,15) + "...";
       }
 
-      let menuLabel = this.getMenuItemLabel(selectedText);
+      const menuLabel = this.getMenuItemLabel(selectedText);
       ctxMenu.setAttribute("label", menuLabel);
       ctxMenu.removeAttribute("hidden");
     }
@@ -154,30 +189,39 @@ ContextSearch.prototype = Object.freeze({
       ctxMenu.setAttribute("hidden", "true");
     }
   },
-
-  // shamelessly ripped from browser.js
+ 
+  /**
+   *  shamelessly ripped from browser.jsm
+   *
+   *  @param    {string}    aString
+   *  @returns  {string}  
+   */
   getMenuItemLabel: function (aString) {
-    let engineName = "";
+    const engineName = "";
 
     // format "Search <engine> for <selection>" string to show in menu
-    let menuLabel = this.window.gNavigatorBundle.getFormattedString("contextMenuSearch", [engineName, aString]);
+    const menuLabel = this.window.gNavigatorBundle.getFormattedString("contextMenuSearch", [engineName, aString]);
     return menuLabel.replace(/\s\s/, " ");
   },
 
+  /**
+   *  @param    {Element}    aPopup
+   *  @returns  {void}  
+   */
   rebuildEngineMenu: function (aPopup) {
-    let engines = Services.search.getVisibleEngines({});
-    let document = this.window.document;
+    const engines = Services.search.getVisibleEngines({});
+    const document = this.window.document;
 
     // clear menu
-    let range = document.createRange();
+    const range = document.createRange();
     range.selectNodeContents(aPopup);
     range.deleteContents();
 
-    let fragment = document.createDocumentFragment();
+    const fragment = document.createDocumentFragment();
     for (let i = 0, l = engines.length; i < l; i++) {
-      let engine   = engines[i];
-      let menuitem = document.createElement("menuitem");
-      let name     = engine.name;
+      const engine   = engines[i];
+      const menuitem = document.createElement("menuitem");
+      const name     = engine.name;
       menuitem.setAttribute("id", "contextsearch-engine:" + encodeURIComponent(name));
       menuitem.setAttribute("label", name);
       menuitem.setAttribute("class", "menuitem-iconic contextsearch-menuitem");
@@ -192,24 +236,32 @@ ContextSearch.prototype = Object.freeze({
     aPopup.appendChild(fragment);
   },
 
+  /**
+   *  @param    {Event} aEvent
+   *  @returns  {void}  
+   */
   onCommand: function (aEvent) {
     this.search(aEvent);
   },
 
+  /**
+   *  @param    {Event} aEvent
+   *  @returns  {void}  
+   */
   search: function (aEvent) {
-    let window = this.window;
-    let target = aEvent.target;
-    let enginesMap = this.searchEnginesMap;
+    const window = this.window;
+    const target = aEvent.target;
+    const enginesMap = this.searchEnginesMap;
     if (!enginesMap.has(target)) {
       return;
     }
 
-    let loadInBackground = Services.prefs.
+    const loadInBackground = Services.prefs.
                            getBoolPref("browser.search.context.loadInBackground");
-    let where            = loadInBackground ? "tabshifted" : "tab";
-    let selectedText     = this._searchTerm;
-    let engine           = enginesMap.get(target);
-    let searchSubmission = engine.getSubmission(selectedText, null, "contextmenu");
+    const where            = loadInBackground ? "tabshifted" : "tab";
+    const selectedText     = this._searchTerm;
+    const engine           = enginesMap.get(target);
+    const searchSubmission = engine.getSubmission(selectedText, null, "contextmenu");
 
     // getSubmission can return null if the engine doesn't have a URL
     // with a text/html response type.
@@ -217,18 +269,18 @@ ContextSearch.prototype = Object.freeze({
       return;
     }
 
-    let searchUrl = searchSubmission.uri.spec;
-    let postData = searchSubmission.postData;
+    const searchUrl = searchSubmission.uri.spec;
+    const postData = searchSubmission.postData;
 
-    let params = {
+    const params = {
       fromChrome: true,
       postData: postData,
       relatedToCurrent: true,
     };
 
-    let openLinkIn = window.openLinkIn;
+    const openLinkIn = window.openLinkIn;
     if (this._isEnabledTreeStyleTab) {
-      let TreeStyleTabService = window.TreeStyleTabService;
+      const TreeStyleTabService = window.TreeStyleTabService;
       TreeStyleTabService.readyToOpenChildTab();
       openLinkIn(searchUrl, where, params);
       TreeStyleTabService.stopToOpenChildTab();
@@ -237,12 +289,16 @@ ContextSearch.prototype = Object.freeze({
       openLinkIn(searchUrl, where, params);
     }
 
-    window.BrowserSearch.recordSearchInHealthReport(engine.name, "contextmenu");
+    window.BrowserSearch.recordSearchInTelemetry(engine, "contextmenu");
   },
 
 });
 
 
+/**
+ *  @param      {!function():void}  aCallback
+ *  @returns    {void}
+ */
 function initSearchService (aCallback) {
   Services.search.init({
     onInitComplete: function () {
