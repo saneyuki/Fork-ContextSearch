@@ -1,2 +1,6 @@
 # distribited package
 context-search.xpi
+
+# npm
+node_modules/
+npm-debug.log

@@ -4,15 +4,13 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = ["ContextSearch"];
+const EXPORTED_SYMBOLS = ["ContextSearch"]; // eslint-disable-line no-unused-vars
 
-const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-Cu.import("resource://gre/modules/Services.jsm");
-
+const { XPCOMUtils } = Cu.import("resource://gre/modules/XPCOMUtils.jsm", {});
+const { Services } = Cu.import("resource://gre/modules/Services.jsm", {});
 
 /**
  *  @constructor
@@ -48,9 +46,9 @@ ContextSearch.prototype = Object.freeze({
    *  @param    {nsISupports}   aSubject
    *  @param    {string}        aTopic
    *  @param    {wstring}   	aData
-   *  @returns  {void} 
+   *  @returns  {void}
    */
-  observe: function (aSubject, aTopic, aData) {
+  observe: function (aSubject, aTopic/*, aData*/) {
     if (aTopic === "browser-search-engine-modified" &&
         this.ctxMenu !== null &&
         this.ctxPopup !== null) {
@@ -60,7 +58,7 @@ ContextSearch.prototype = Object.freeze({
 
   /**
    *  @param    {Event} aEvent
-   *  @returns  {void} 
+   *  @returns  {void}
    */
   handleEvent: function (aEvent) {
     switch (aEvent.type) {
@@ -77,17 +75,15 @@ ContextSearch.prototype = Object.freeze({
   },
 
   /**
-   *  @returns  {void} 
+   *  @returns  {void}
    */
   initialize: function () {
     const window = this.window;
-    const document = window.document;
-
 
     window.addEventListener("unload", this, false);
 
     Services.obs.addObserver(this, "browser-search-engine-modified", true);
-    this._isEnabledTreeStyleTab = ("TreeStyleTabService" in window) ? true : false;
+    this._isEnabledTreeStyleTab = ("TreeStyleTabService" in window);
 
     initSearchService(() => {
       [this.ctxPopup, this.ctxMenu] = this.createMenu();
@@ -95,7 +91,7 @@ ContextSearch.prototype = Object.freeze({
   },
 
   /**
-   *  @returns  {[Element, Element]} 
+   *  @returns  {[Element, Element]}
    */
   createMenu: function () {
     const window = this.window;
@@ -125,7 +121,7 @@ ContextSearch.prototype = Object.freeze({
   },
 
   /**
-   *  @returns  {void}  
+   *  @returns  {void}
    */
   finalize: function () {
     const window = this.window;
@@ -146,12 +142,12 @@ ContextSearch.prototype = Object.freeze({
 
     // Release DOM reference
     this.ctxPopup = null;
-    this.ctxMenu  = null;
+    this.ctxMenu = null;
     this.window = null;
   },
 
   /**
-   *  @returns  {void}  
+   *  @returns  {void}
    */
   onUnLoad: function () {
     this.finalize();
@@ -159,7 +155,7 @@ ContextSearch.prototype = Object.freeze({
 
   /**
    *  @param    {Event} aEvent
-   *  @returns  {void}  
+   *  @returns  {void}
    */
   onPopup: function(aEvent) {
     if (aEvent.target.id !== "contentAreaContextMenu") {
@@ -178,7 +174,7 @@ ContextSearch.prototype = Object.freeze({
 
       this._searchTerm = selectedText;
       if (selectedText.length > 15) {
-        selectedText = selectedText.substr(0,15) + "...";
+        selectedText = selectedText.substr(0, 15) + "...";
       }
 
       const menuLabel = this.getMenuItemLabel(selectedText);
@@ -189,12 +185,12 @@ ContextSearch.prototype = Object.freeze({
       ctxMenu.setAttribute("hidden", "true");
     }
   },
- 
+
   /**
    *  shamelessly ripped from browser.jsm
    *
    *  @param    {string}    aString
-   *  @returns  {string}  
+   *  @returns  {string}
    */
   getMenuItemLabel: function (aString) {
     const engineName = "";
@@ -206,7 +202,7 @@ ContextSearch.prototype = Object.freeze({
 
   /**
    *  @param    {Element}    aPopup
-   *  @returns  {void}  
+   *  @returns  {void}
    */
   rebuildEngineMenu: function (aPopup) {
     const engines = Services.search.getVisibleEngines({});
@@ -219,9 +215,9 @@ ContextSearch.prototype = Object.freeze({
 
     const fragment = document.createDocumentFragment();
     for (let i = 0, l = engines.length; i < l; i++) {
-      const engine   = engines[i];
+      const engine = engines[i];
       const menuitem = document.createElement("menuitem");
-      const name     = engine.name;
+      const name = engine.name;
       menuitem.setAttribute("id", "contextsearch-engine:" + encodeURIComponent(name));
       menuitem.setAttribute("label", name);
       menuitem.setAttribute("class", "menuitem-iconic contextsearch-menuitem");
@@ -238,7 +234,7 @@ ContextSearch.prototype = Object.freeze({
 
   /**
    *  @param    {Event} aEvent
-   *  @returns  {void}  
+   *  @returns  {void}
    */
   onCommand: function (aEvent) {
     this.search(aEvent);
@@ -246,7 +242,7 @@ ContextSearch.prototype = Object.freeze({
 
   /**
    *  @param    {Event} aEvent
-   *  @returns  {void}  
+   *  @returns  {void}
    */
   search: function (aEvent) {
     const window = this.window;
@@ -258,9 +254,9 @@ ContextSearch.prototype = Object.freeze({
 
     const loadInBackground = Services.prefs.
                            getBoolPref("browser.search.context.loadInBackground");
-    const where            = loadInBackground ? "tabshifted" : "tab";
-    const selectedText     = this._searchTerm;
-    const engine           = enginesMap.get(target);
+    const where = loadInBackground ? "tabshifted" : "tab";
+    const selectedText = this._searchTerm;
+    const engine = enginesMap.get(target);
     const searchSubmission = engine.getSubmission(selectedText, null, "contextmenu");
 
     // getSubmission can return null if the engine doesn't have a URL
@@ -293,16 +289,17 @@ ContextSearch.prototype = Object.freeze({
   },
 
 });
+this.ContextSearch = ContextSearch; // eslint-disable-line no-invalid-this
 
 
 /**
  *  @param      {!function():void}  aCallback
  *  @returns    {void}
  */
-function initSearchService (aCallback) {
+function initSearchService(aCallback) {
   Services.search.init({
     onInitComplete: function () {
       aCallback();
     }
   });
-};
+}
