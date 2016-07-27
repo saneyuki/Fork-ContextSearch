@@ -4,87 +4,64 @@
 
 "use strict";
 
-const { classes: Cc, interfaces: Ci, utils: Cu } = Components;
+const { interfaces: Ci, utils: Cu } = Components;
 
 // Bootstrap Addon Reason Constants:
-const APP_STARTUP     = 1;
-const APP_SHUTDOWN    = 2;
-const ADDON_ENABLE    = 3;
-const ADDON_DISABLE   = 4;
-const ADDON_INSTALL   = 5;
-const ADDON_UNINSTALL = 6;
-const ADDON_UPGRADE   = 7;
-const ADDON_DOWNGRADE = 8;
+//const APP_STARTUP = 1;
+const APP_SHUTDOWN = 2;
+//const ADDON_ENABLE = 3;
+//const ADDON_DISABLE = 4;
+//const ADDON_INSTALL = 5;
+//const ADDON_UNINSTALL = 6;
+//const ADDON_UPGRADE = 7;
+//const ADDON_DOWNGRADE = 8;
 
-Cu.import("resource://gre/modules/Services.jsm");
+const {Services} = Cu.import("resource://gre/modules/Services.jsm", {});
 
 /** @type   {WeakMap<Window, ContextSearch>} */
 let gObjectMap = null;
+let ContextSearchConstructor = null;
 
-/**
- * bootstrapped addon interfaces
- *
- * @param   {?}         aData
- * @param   {number}    aReason
- */
-function startup(aData, aReason) {
-  Cu.import("chrome://contextsearch/content/ContextSearch.jsm");
-  gObjectMap = new WeakMap();
+const SetupHelper = {
 
-  const windows = Services.wm.getEnumerator("navigator:browser");
-  while (windows.hasMoreElements()) {
-    const domWindow = windows.getNext().QueryInterface(Ci.nsIDOMWindow);
-    SetupHelper.setup(domWindow);
-  }
+  /**
+   * @param {Window} aDomWindow
+   * @returns {void}
+   */
+  setup: function (aDomWindow) {
+    const windowType = aDomWindow.document.
+                     documentElement.getAttribute("windowtype");
+    // If this isn't a browser window then abort setup.
+    if (windowType !== "navigator:browser") {
+      return;
+    }
 
-  Services.wm.addListener(WindowListener);
-}
+    const contextsearch = new ContextSearchConstructor(aDomWindow);
+    gObjectMap.set(aDomWindow, contextsearch);
+  },
 
-/**
- * @param   {?}         aData
- * @param   {number}    aReason
- */
-function shutdown(aData, aReason) {
-  Services.wm.removeListener(WindowListener);
+  /**
+   * @param {Window} aDomWindow
+   * @returns {void}
+   */
+  teardown: function (aDomWindow) {
+    const contextsearch = gObjectMap.get(aDomWindow);
+    if (!!contextsearch) {
+      contextsearch.finalize();
+    }
+  },
 
-  // if the application is shutdown time, we don't have to call these step.
-  if (aReason === APP_SHUTDOWN) {
-    return;
-  }
-
-  const windows = Services.wm.getEnumerator("navigator:browser");
-  while (windows.hasMoreElements()) {
-    const domWindow = windows.getNext().QueryInterface(Ci.nsIDOMWindow);
-    SetupHelper.teardown(domWindow);
-  }
-
-  gObjectMap = null;
-
-  Cu.unload("chrome://contextsearch/content/ContextSearch.jsm");
-}
-
-/**
- * @param   {?}         aData
- * @param   {number}    aReason
- */
-function install(aData, aReason) {
-}
-
-/**
- * @param   {?}         aData
- * @param   {number}    aReason
- */
-function uninstall(aData, aReason) {
-}
+};
 
 // nsIWindowMediatorListener
 const WindowListener = {
 
   /**
    * @param {Window} aXulWindow
+   * @returns {void}
    */
   onOpenWindow : function (aXulWindow) {
-    const domWindow = aXulWindow.QueryInterface(Ci.nsIInterfaceRequestor)
+    const domWindow = aXulWindow.QueryInterface(Ci.nsIInterfaceRequestor) // eslint-disable-line new-cap
                     .getInterface(Ci.nsIDOMWindow);
 
     // Wait finish loading
@@ -95,36 +72,68 @@ const WindowListener = {
     }, false);
   },
 
-  onCloseWindow : function (aXulWindow) {},
+  onCloseWindow(/* aXulWindow */) {}, // eslint-disable-line no-empty-function
 
-  onWindowTitleChange : function (aWindow, aNewTitle) {}
+  onWindowTitleChange(/* aWindow, aNewTitle */) {} // eslint-disable-line no-empty-function
 };
 
-const SetupHelper = {
+/**
+ * bootstrapped addon interfaces
+ *
+ * @param   {?}         aData
+ * @param   {number}    aReason
+ * @returns {void}
+ */
+function startup(aData, aReason) { // eslint-disable-line no-unused-vars
+  const { ContextSearch } = Cu.import("chrome://contextsearch/content/ContextSearch.js", {});
+  ContextSearchConstructor = ContextSearch;
+  gObjectMap = new WeakMap();
 
-  /**
-   * @param {Window} aDomWindow
-   */
-  setup: function (aDomWindow) {
-    const windowType = aDomWindow.document.
-                     documentElement.getAttribute("windowtype");
-    // If this isn't a browser window then abort setup.
-    if (windowType !== "navigator:browser") {
-      return;
-    }
+  const windows = Services.wm.getEnumerator("navigator:browser");
+  while (windows.hasMoreElements()) {
+    const domWindow = windows.getNext().QueryInterface(Ci.nsIDOMWindow); // eslint-disable-line new-cap
+    SetupHelper.setup(domWindow);
+  }
 
-    const contextsearch = new ContextSearch(aDomWindow);
-    gObjectMap.set(aDomWindow, contextsearch);
-  },
+  Services.wm.addListener(WindowListener);
+}
 
-  /**
-   * @param {Window} aDomWindow
-   */
-  teardown: function (aDomWindow) {
-    const contextsearch = gObjectMap.get(aDomWindow);
-    if (!!contextsearch) {
-      contextsearch.finalize();
-    }
-  },
+/**
+ * @param   {?}         aData
+ * @param   {number}    aReason
+ * @returns {void}
+ */
+function shutdown(aData, aReason) { // eslint-disable-line no-unused-vars
+  Services.wm.removeListener(WindowListener);
 
-};
+  // if the application is shutdown time, we don't have to call these step.
+  if (aReason === APP_SHUTDOWN) {
+    return;
+  }
+
+  const windows = Services.wm.getEnumerator("navigator:browser");
+  while (windows.hasMoreElements()) {
+    const domWindow = windows.getNext().QueryInterface(Ci.nsIDOMWindow); // eslint-disable-line new-cap
+    SetupHelper.teardown(domWindow);
+  }
+
+  gObjectMap = null;
+
+  Cu.unload("chrome://contextsearch/content/ContextSearch.js");
+}
+
+/**
+ * @param   {?}         aData
+ * @param   {number}    aReason
+ * @returns {void}
+ */
+function install(aData, aReason) { // eslint-disable-line no-unused-vars
+}
+
+/**
+ * @param   {?}         aData
+ * @param   {number}    aReason
+ * @returns {void}
+ */
+function uninstall(aData, aReason) { // eslint-disable-line no-unused-vars
+}

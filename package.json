@@ -1,0 +1,22 @@
+{
+  "name": "context-search",
+  "version": "1.2.3",
+  "description": "Forked Context Search <https://addons.mozilla.org/firefox/addon/240/>",
+  "scripts": {
+    "lint": "eslint --ext js,jsm content/ tools/ .",
+    "test": "npm run lint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/saneyuki/Fork-ContextSearch.git"
+  },
+  "author": "",
+  "license": "MPL-2.0",
+  "bugs": {
+    "url": "https://github.com/saneyuki/Fork-ContextSearch/issues"
+  },
+  "homepage": "https://github.com/saneyuki/Fork-ContextSearch",
+  "devDependencies": {
+    "eslint": "^3.1.1"
+  }
+}
