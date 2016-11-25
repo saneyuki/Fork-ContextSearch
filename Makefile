@@ -4,6 +4,8 @@ OPTION  = -6
 PACKAGE = context-search.xpi
 FILE    = \
   ./content/ContextSearch.js \
+  ./webextension/background.js \
+  ./webextension/manifest.json \
   chrome.manifest \
   bootstrap.js \
   install.rdf
