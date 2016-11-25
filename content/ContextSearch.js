@@ -15,10 +15,17 @@ const { Services } = Cu.import("resource://gre/modules/Services.jsm", {});
 /**
  *  @constructor
  *  @param    {Window}  aWindow
+ *  @param  { { runtime: ? } } browser
  */
-function ContextSearch(aWindow) {
+function ContextSearch(aWindow, browser) {
   /**  @type    {Window} */
   this.window = aWindow;
+  /** @type {?} */
+  this._port = null;
+  browser.runtime.onConnect.addListener((port) => {
+    this._port = port;
+    this._enableMenu();
+  });
 
   /**  @type    {WeakMap<K, V>} */
   this.searchEnginesMap = new WeakMap();
@@ -37,10 +44,12 @@ function ContextSearch(aWindow) {
 }
 ContextSearch.prototype = Object.freeze({
 
-  QueryInterface: XPCOMUtils.generateQI([Ci.nsIObserver,
-                                         Ci.nsIDOMEventListener,
-                                         Ci.nsISupportsWeakReference,
-                                         Ci.nsISupports]),
+  QueryInterface: XPCOMUtils.generateQI([
+    Ci.nsIObserver,
+    Ci.nsIDOMEventListener,
+    Ci.nsISupportsWeakReference,
+    Ci.nsISupports,
+  ]),
 
   /**
    *  @param    {nsISupports}   aSubject
@@ -106,6 +115,9 @@ ContextSearch.prototype = Object.freeze({
     menu.setAttribute("id", "context-searchmenu");
     const accesskey = window.gNavigatorBundle.getString("contextMenuSearch.accesskey");
     menu.setAttribute("accesskey", accesskey);
+    if (this._port === null) {
+      menu.setAttribute("disabled", "true");
+    }
 
     menu.appendChild(popup);
 
@@ -118,6 +130,10 @@ ContextSearch.prototype = Object.freeze({
     insertionPoint.style.display = "none";
 
     return [popup, menu];
+  },
+
+  _enableMenu() {
+    this.ctxMenu.removeAttribute("disabled");
   },
 
   /**
@@ -267,22 +283,18 @@ ContextSearch.prototype = Object.freeze({
 
     const searchUrl = searchSubmission.uri.spec;
     const postData = searchSubmission.postData;
+    if (postData !== null) {
+      throw new Error(`This type engine is unsupported: ${engine.name}`);
+    }
 
-    const params = {
-      fromChrome: true,
-      postData: postData,
-      relatedToCurrent: true,
-    };
-
-    const openLinkIn = window.openLinkIn;
     if (this._isEnabledTreeStyleTab) {
       const TreeStyleTabService = window.TreeStyleTabService;
       TreeStyleTabService.readyToOpenChildTab();
-      openLinkIn(searchUrl, where, params);
+      openTab(this._port, searchUrl, where);
       TreeStyleTabService.stopToOpenChildTab();
     }
     else {
-      openLinkIn(searchUrl, where, params);
+      openTab(this._port, searchUrl, where);
     }
 
     window.BrowserSearch.recordSearchInTelemetry(engine, "contextmenu");
@@ -302,4 +314,38 @@ function initSearchService(aCallback) {
       aCallback();
     }
   });
+}
+
+/**
+ *  @param  {?} port
+ *  @param  {string}  url
+ *  @param  {string}  where
+ *  @returns  {void}
+ */
+function openTab(port, url, where) {
+  if (port === null) {
+    throw new TypeError("`port` must not be `null`");
+  }
+
+  postMessage(port, "contextsearch-open-tab", {
+    url,
+    where,
+  });
+}
+
+/**
+ *  @template T
+ *  @param  {?} port
+ *  @param  {string}  type
+ *  @param  {T} value
+ *  @returns  {void}
+ */
+function postMessage(port, type, value) {
+  const id = 0;
+  const message = {
+    type,
+    id,
+    value,
+  };
+  port.postMessage(message);
 }

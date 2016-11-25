@@ -21,6 +21,7 @@ const {Services} = Cu.import("resource://gre/modules/Services.jsm", {});
 /** @type   {WeakMap<Window, ContextSearch>} */
 let gObjectMap = null;
 let ContextSearchConstructor = null;
+let gWebExtBrowser = null;
 
 const SetupHelper = {
 
@@ -36,7 +37,7 @@ const SetupHelper = {
       return;
     }
 
-    const contextsearch = new ContextSearchConstructor(aDomWindow);
+    const contextsearch = new ContextSearchConstructor(aDomWindow, gWebExtBrowser);
     gObjectMap.set(aDomWindow, contextsearch);
   },
 
@@ -84,18 +85,23 @@ const WindowListener = {
  * @param   {number}    aReason
  * @returns {void}
  */
-function startup(aData, aReason) { // eslint-disable-line no-unused-vars
+function startup({ webExtension }, aReason) { // eslint-disable-line no-unused-vars
   const { ContextSearch } = Cu.import("chrome://contextsearch/content/ContextSearch.js", {});
   ContextSearchConstructor = ContextSearch;
   gObjectMap = new WeakMap();
 
-  const windows = Services.wm.getEnumerator("navigator:browser");
-  while (windows.hasMoreElements()) {
-    const domWindow = windows.getNext().QueryInterface(Ci.nsIDOMWindow); // eslint-disable-line new-cap
-    SetupHelper.setup(domWindow);
-  }
+  webExtension.startup().then((api) => {
+    const { browser } = api;
+    gWebExtBrowser = browser;
 
-  Services.wm.addListener(WindowListener);
+    const windows = Services.wm.getEnumerator("navigator:browser");
+    while (windows.hasMoreElements()) {
+      const domWindow = windows.getNext().QueryInterface(Ci.nsIDOMWindow); // eslint-disable-line new-cap
+      SetupHelper.setup(domWindow);
+    }
+
+    Services.wm.addListener(WindowListener);
+  });
 }
 
 /**
