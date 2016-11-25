@@ -46,10 +46,21 @@ port.onMessage.addListener((msg) => {
  *    `tabs.Tab.id`. integer.
  */
 async function createTab(url, where) {
+  const tabList = await browser.tabs.query({
+    active: true,
+    currentWindow: true,
+    windowType: "normal",
+  });
+  if (tabList.length === 0) {
+    throw new Error("assert!: don't get the current tab");
+  }
+  const currentTab = tabList[0];
+
   const option = {
     active: false,
     url,
     windowId: null,
+    index: currentTab.index + 1, // open next to the current tab.
   };
 
   switch (where) {
