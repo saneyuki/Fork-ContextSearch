@@ -3,6 +3,7 @@
   "name": "Context Search",
   "version": "0.0.1",
   "permissions": [
+    "tabs"
   ],
   "background": {
     "scripts": [
