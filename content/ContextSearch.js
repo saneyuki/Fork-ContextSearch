@@ -37,10 +37,12 @@ function ContextSearch(aWindow) {
 }
 ContextSearch.prototype = Object.freeze({
 
-  QueryInterface: XPCOMUtils.generateQI([Ci.nsIObserver,
-                                         Ci.nsIDOMEventListener,
-                                         Ci.nsISupportsWeakReference,
-                                         Ci.nsISupports]),
+  QueryInterface: XPCOMUtils.generateQI([
+    Ci.nsIObserver,
+    Ci.nsIDOMEventListener,
+    Ci.nsISupportsWeakReference,
+    Ci.nsISupports,
+  ]),
 
   /**
    *  @param    {nsISupports}   aSubject
