@@ -288,9 +288,16 @@ ContextSearch.prototype = Object.freeze({
     }
 
     if (this._isEnabledTreeStyleTab) {
+      const openLinkIn = window.openLinkIn;
       const TreeStyleTabService = window.TreeStyleTabService;
+      const params = {
+        fromChrome: true,
+        postData,
+        relatedToCurrent: true,
+      };
+
       TreeStyleTabService.readyToOpenChildTab();
-      openTab(this._port, searchUrl, where);
+      openLinkIn(searchUrl, where, params);
       TreeStyleTabService.stopToOpenChildTab();
     }
     else {
