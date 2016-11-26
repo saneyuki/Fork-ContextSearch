@@ -23,7 +23,7 @@ const {Services} = Cu.import("resource://gre/modules/Services.jsm", {});
 /** @type   {WeakMap<Window, ContextSearch>} */
 let gObjectMap = null;
 let ContextSearchConstructor = null;
-let gWebExtBrowser = null;
+let gChannel = null;
 
 const SetupHelper = {
 
@@ -39,7 +39,7 @@ const SetupHelper = {
       return;
     }
 
-    const contextsearch = new ContextSearchConstructor(aDomWindow, gWebExtBrowser);
+    const contextsearch = new ContextSearchConstructor(aDomWindow, gChannel);
     gObjectMap.set(aDomWindow, contextsearch);
   },
 
@@ -89,12 +89,14 @@ const WindowListener = {
  */
 function startup({ webExtension }, aReason) { // eslint-disable-line no-unused-vars
   const { ContextSearch } = Cu.import("chrome://contextsearch/content/ContextSearch.js", {});
+  const { WebExtRTMessageChannel } = Cu.import("chrome://contextsearch/content/WebExtRTMessageChannel.js", {});
+
   ContextSearchConstructor = ContextSearch;
   gObjectMap = new WeakMap();
 
   webExtension.startup().then((api) => {
     const { browser } = api;
-    gWebExtBrowser = browser;
+    gChannel = WebExtRTMessageChannel.create(browser);
 
     const windows = Services.wm.getEnumerator("navigator:browser");
     while (windows.hasMoreElements()) {
@@ -125,9 +127,11 @@ function shutdown(aData, aReason) { // eslint-disable-line no-unused-vars
     SetupHelper.teardown(domWindow);
   }
 
-  gWebExtBrowser = null;
+  gChannel.destroy();
+  gChannel = null;
   gObjectMap = null;
 
+  Cu.unload("chrome://contextsearch/content/WebExtRTMessageChannel.js");
   Cu.unload("chrome://contextsearch/content/ContextSearch.js");
 }
 

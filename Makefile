@@ -4,6 +4,7 @@ OPTION  = -6
 PACKAGE = context-search.xpi
 FILE    = \
   ./content/ContextSearch.js \
+  ./content/WebExtRTMessageChannel.js \
   ./webextension/background.js \
   ./webextension/manifest.json \
   chrome.manifest \

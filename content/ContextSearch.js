@@ -17,17 +17,15 @@ const { Services } = Cu.import("resource://gre/modules/Services.jsm", {});
 /**
  *  @constructor
  *  @param    {Window}  aWindow
- *  @param  { { runtime: ? } } browser
+ *  @param  {WebExtRTMessageChannel} channel
  */
-function ContextSearch(aWindow, browser) {
+function ContextSearch(aWindow, channel) {
   /**  @type    {Window} */
   this.window = aWindow;
+  /**  @type    {WebExtRTMessageChannel} */
+  this._channel = channel;
   /** @type {?} */
-  this._port = null;
-  browser.runtime.onConnect.addListener((port) => {
-    this._port = port;
-    this._enableMenu();
-  });
+  this._isConnected = false;
 
   /**  @type    {WeakMap<K, V>} */
   this.searchEnginesMap = new WeakMap();
@@ -96,8 +94,13 @@ ContextSearch.prototype = Object.freeze({
     Services.obs.addObserver(this, "browser-search-engine-modified", true);
     this._isEnabledTreeStyleTab = ("TreeStyleTabService" in window);
 
-    initSearchService(() => {
+    const buildMenu = initSearchService().then(() => {
       [this.ctxPopup, this.ctxMenu] = this.createMenu();
+    });
+    const connected = this._channel.connect();
+    Promise.all([buildMenu, connected]).then(() => {
+      this._isConnected = true;
+      this._enableMenu();
     });
   },
 
@@ -117,7 +120,7 @@ ContextSearch.prototype = Object.freeze({
     menu.setAttribute("id", "context-searchmenu");
     const accesskey = window.gNavigatorBundle.getString("contextMenuSearch.accesskey");
     menu.setAttribute("accesskey", accesskey);
-    if (this._port === null) {
+    if (!this._isConnected) {
       menu.setAttribute("disabled", "true");
     }
 
@@ -303,58 +306,32 @@ ContextSearch.prototype = Object.freeze({
       TreeStyleTabService.stopToOpenChildTab();
     }
     else {
-      openTab(this._port, searchUrl, where);
+      this._openNewTab(searchUrl, where);
     }
 
     window.BrowserSearch.recordSearchInTelemetry(engine, "contextmenu");
   },
 
+  _openNewTab(url, where) {
+    return this._channel.postMessage("contextsearch-open-tab", {
+      url,
+      where,
+    });
+  },
 });
 this.ContextSearch = ContextSearch; // eslint-disable-line no-invalid-this
 
 
 /**
- *  @param      {!function():void}  aCallback
- *  @returns    {void}
+ *  @returns    {Promise<void>}
  */
-function initSearchService(aCallback) {
-  Services.search.init({
-    onInitComplete: function () {
-      aCallback();
-    }
+function initSearchService() {
+  const promise = new Promise((resolve) => {
+    Services.search.init({
+      onInitComplete: function () {
+        resolve();
+      }
+    });
   });
-}
-
-/**
- *  @param  {?} port
- *  @param  {string}  url
- *  @param  {string}  where
- *  @returns  {void}
- */
-function openTab(port, url, where) {
-  if (port === null) {
-    throw new TypeError("`port` must not be `null`");
-  }
-
-  postMessage(port, "contextsearch-open-tab", {
-    url,
-    where,
-  });
-}
-
-/**
- *  @template T
- *  @param  {?} port
- *  @param  {string}  type
- *  @param  {T} value
- *  @returns  {void}
- */
-function postMessage(port, type, value) {
-  const id = 0;
-  const message = {
-    type,
-    id,
-    value,
-  };
-  port.postMessage(message);
+  return promise;
 }
