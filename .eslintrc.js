@@ -13,16 +13,12 @@ module.exports = {
   ],
 
   "parserOptions": {
-    'ecmaVersion': 2017,
+    "ecmaVersion": 2017,
   },
 
   "env": {
     "es6": true,
     "commonjs": true,
-  },
-
-  "globals": {
-    "Components": false,
   },
 
   "root": true,
