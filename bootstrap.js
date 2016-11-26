@@ -123,6 +123,7 @@ function shutdown(aData, aReason) { // eslint-disable-line no-unused-vars
     SetupHelper.teardown(domWindow);
   }
 
+  gWebExtBrowser = null;
   gObjectMap = null;
 
   Cu.unload("chrome://contextsearch/content/ContextSearch.js");
